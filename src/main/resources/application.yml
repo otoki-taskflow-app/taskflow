@@ -1,6 +1,6 @@
 spring:
   application:
-    name: NewsFeed
+    name: TaskFlow
   config:
     import: optional:file:.env[.properties]
   datasource:
