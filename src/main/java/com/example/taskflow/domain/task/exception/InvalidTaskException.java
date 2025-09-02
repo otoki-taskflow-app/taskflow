@@ -1,4 +1,4 @@
-package com.example.taskflow.domain.tasks.exception;
+package com.example.taskflow.domain.task.exception;
 
 import com.example.taskflow.common.exception.ErrorCode;
 import com.example.taskflow.common.exception.GlobalException;
