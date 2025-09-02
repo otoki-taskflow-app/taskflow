@@ -1,16 +1,25 @@
 package com.example.taskflow.common.response;
 
+import com.example.taskflow.common.exception.ErrorCode;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.time.LocalDateTime;
+
 @Getter
 public class ApiResponse<T> {
 
+    private final boolean success;
+    private final String message;
     private final T data;
+    private final LocalDateTime timestamp;
 
-    private ApiResponse(T data) {
+    private ApiResponse(boolean success, String message, T data, LocalDateTime timestamp) {
+        this.success = success;
+        this.message = message;
         this.data = data;
+        this.timestamp = timestamp;
     }
 
     /**
@@ -20,10 +29,10 @@ public class ApiResponse<T> {
      * @param data 생성된 리소스의 데이터
      * @return HTTP 201 Created 응답과 함께 생성된 데이터가 포함된 ApiResponseDto
      */
-    public static <T> ResponseEntity<ApiResponse<T>> created(T data) {
+    public static <T> ResponseEntity<ApiResponse<T>> created(T data, String message) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(new ApiResponse<>(data));
+                .body(new ApiResponse<>(true, message, data, LocalDateTime.now()));
     }
 
     /**
@@ -33,17 +42,17 @@ public class ApiResponse<T> {
      * @param data 요청 성공 시 반환할 데이터
      * @return HTTP 200 OK 응답과 함께 성공 데이터가 포함된 ApiResponseDto
      */
-    public static <T> ResponseEntity<ApiResponse<T>> success(T data) {
-        return ResponseEntity.ok(new ApiResponse<>(data));
+    public static <T> ResponseEntity<ApiResponse<T>> success(T data, String message) {
+        return ResponseEntity.ok(new ApiResponse<>(true, message, data, LocalDateTime.now()));
     }
 
+
     /**
-     * 성공적인 요청에 대한 응답을 반환하는 메서드
-     * 주어진 데이터를 포함하여 HTTP 204 No Content 상태 코드와 함께 응답을 반환
-     *
-     * @return HTTP 204 No Content 응답과 함께 성공 데이터가 포함된 ApiResponseDto
+     * 에러에 대한 응답을 반환하는 메서드
+     * 이 메서드는 `ErrorCode` 객체에서 제공하는 메세지를 사용하여 메세지를 반환
+     * `data`는 항상 `null' 값을 반환하며 `success` 값은 `false`로 반환
      */
-    public static <T> ResponseEntity<ApiResponse<T>> noContent() {
-        return ResponseEntity.noContent().build();
+    public static <T> ApiResponse<T> error(ErrorCode error) {
+        return new ApiResponse<>(false, error.getMessage(), null, LocalDateTime.now());
     }
 }
