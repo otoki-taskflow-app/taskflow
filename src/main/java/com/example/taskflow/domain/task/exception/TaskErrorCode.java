@@ -9,7 +9,9 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum TaskErrorCode implements ErrorCode {
 
-    FORBIDDEN_COMMENT_ACCESS(HttpStatus.FORBIDDEN, "해당 댓글에 대한 권한이 없습니다.");
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 유저를 찾을 수 없습니다."),
+    TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 ID의 작업을 찾을 수 없습니다.");
+
 
     private final HttpStatus httpStatus;
     private final String message;
