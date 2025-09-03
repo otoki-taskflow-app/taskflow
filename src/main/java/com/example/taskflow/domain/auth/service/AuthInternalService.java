@@ -1,21 +1,28 @@
 package com.example.taskflow.domain.auth.service;
 
+import com.example.taskflow.domain.auth.dto.request.AuthLoginRequest;
 import com.example.taskflow.domain.auth.dto.request.AuthRegisterRequest;
+import com.example.taskflow.domain.auth.dto.response.AuthLoginResponse;
 import com.example.taskflow.domain.auth.dto.response.AuthResponse;
 import com.example.taskflow.domain.auth.exception.AuthErrorCode;
 import com.example.taskflow.domain.auth.exception.AuthException;
 import com.example.taskflow.domain.auth.repository.AuthRepository;
+import com.example.taskflow.domain.auth.util.JwtProvider;
 import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.enums.Role;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class AuthInternalService {
 
     private final AuthRepository authRepository;
+    private final JwtProvider jwtProvider;
 
     public AuthResponse signup(AuthRegisterRequest request) {
 
@@ -36,5 +43,18 @@ public class AuthInternalService {
         User savedUser = authRepository.save(user);
 
         return AuthResponse.from(savedUser);
+    }
+
+    public AuthLoginResponse login(AuthLoginRequest request) {
+        User user = authRepository.findByUsername(request.username()).orElseThrow(() ->
+                new AuthException(AuthErrorCode.INVALID_LOGIN));
+
+        if (!ObjectUtils.nullSafeEquals(user.getPassword(), request.password())) {
+            throw new AuthException(AuthErrorCode.INVALID_LOGIN);
+        }
+
+        String token = jwtProvider.createToken(user.getId(), user.getEmail(), user.getRole());
+
+        return AuthLoginResponse.of(token);
     }
 }
