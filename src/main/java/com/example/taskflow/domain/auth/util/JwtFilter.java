@@ -1,11 +1,5 @@
 package com.example.taskflow.domain.auth.util;
 
-import com.example.taskflow.domain.auth.exception.AuthErrorCode;
-import com.example.taskflow.domain.auth.exception.AuthException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,7 +16,6 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
-    private final ObjectMapper objectMapper;
 
     private static String[] WHITELIST = {
             "/api/auth/register",
