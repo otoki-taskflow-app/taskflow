@@ -1,7 +1,9 @@
 package com.example.taskflow.domain.auth.controller;
 
 import com.example.taskflow.common.response.ApiResponse;
+import com.example.taskflow.domain.auth.dto.request.AuthLoginRequest;
 import com.example.taskflow.domain.auth.dto.request.AuthRegisterRequest;
+import com.example.taskflow.domain.auth.dto.response.AuthLoginResponse;
 import com.example.taskflow.domain.auth.dto.response.AuthResponse;
 import com.example.taskflow.domain.auth.service.AuthInternalService;
 import lombok.AccessLevel;
@@ -26,5 +28,14 @@ public class AuthController {
         AuthResponse response = authInternalService.signup(request);
 
         return ApiResponse.created(response, "회원가입이 완료되었습니다.");
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<AuthLoginResponse>> login(
+            @RequestBody AuthLoginRequest request
+    ) {
+        AuthLoginResponse response = authInternalService.login(request);
+
+        return ApiResponse.created(response, "로그인이 완료되었습니다.");
     }
 }
