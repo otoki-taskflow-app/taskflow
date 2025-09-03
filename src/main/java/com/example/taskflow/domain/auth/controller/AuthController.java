@@ -20,10 +20,10 @@ public class AuthController {
     private final AuthInternalService authInternalService;
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<AuthResponse>> signUp(
+    public ResponseEntity<ApiResponse<AuthResponse>> signup(
             @RequestBody AuthRegisterRequest registerRequest
     ) {
-        AuthResponse response = authInternalService.signUp(registerRequest);
+        AuthResponse response = authInternalService.signup(registerRequest);
 
         return ApiResponse.created(response, "회원가입이 완료되었습니다.");
     }
