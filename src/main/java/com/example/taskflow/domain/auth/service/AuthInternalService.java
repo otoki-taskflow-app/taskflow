@@ -17,7 +17,7 @@ public class AuthInternalService {
 
     private final AuthRepository authRepository;
 
-    public AuthResponse signUp(AuthRegisterRequest request) {
+    public AuthResponse signup(AuthRegisterRequest request) {
 
         if (authRepository.existsByUsername(request.username())) {
             throw new AuthException(AuthErrorCode.USERNAME_ALREADY_EXISTS);
