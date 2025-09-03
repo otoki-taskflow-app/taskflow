@@ -1,8 +1,14 @@
 package com.example.taskflow.domain.auth.controller;
 
+import com.example.taskflow.common.response.ApiResponse;
+import com.example.taskflow.domain.auth.dto.request.AuthRegisterRequest;
+import com.example.taskflow.domain.auth.dto.response.AuthResponse;
 import com.example.taskflow.domain.auth.service.AuthInternalService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,5 +19,12 @@ public class AuthController {
 
     private final AuthInternalService authInternalService;
 
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponse<AuthResponse>> signUp(
+            @RequestBody AuthRegisterRequest registerRequest
+    ) {
+        AuthResponse response = authInternalService.signUp(registerRequest);
 
+        return ApiResponse.created(response, "회원가입이 완료되었습니다.");
+    }
 }
