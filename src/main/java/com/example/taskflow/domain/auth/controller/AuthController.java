@@ -21,9 +21,9 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> signup(
-            @RequestBody AuthRegisterRequest registerRequest
+            @RequestBody AuthRegisterRequest request
     ) {
-        AuthResponse response = authInternalService.signup(registerRequest);
+        AuthResponse response = authInternalService.signup(request);
 
         return ApiResponse.created(response, "회원가입이 완료되었습니다.");
     }
