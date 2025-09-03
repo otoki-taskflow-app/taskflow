@@ -11,5 +11,5 @@ public class TeamResponse {
         this.description = team.getDescription();
     }
 
-    public static TeamResponse of(Team team){return new TeamResponse(team);}
+    public static TeamResponse from(Team team){return new TeamResponse(team);}
 }
