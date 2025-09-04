@@ -1,24 +1,19 @@
 package com.example.taskflow.domain.comment.dto.response;
 
 import com.example.taskflow.domain.comment.entity.Comment;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 import java.time.LocalDateTime;
 
-@Getter
-@AllArgsConstructor
-public class CommentUpdateResponse {
-    private Long id;
-    private String content;
-    private Long taskId;
-    private Long userId;
-    private CommentUserResponse user;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+public record CommentUpdateResponse(
+        Long id,
+        String content,
+        Long taskId,
+        Long userId,
+        CommentUserResponse user,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt) {
 
-    public static CommentUpdateResponse from (Comment comment, CommentUserResponse userResponse) {
-        return new  CommentUpdateResponse(
+    public static CommentUpdateResponse from(Comment comment, CommentUserResponse userResponse) {
+        return new CommentUpdateResponse(
                 comment.getId(),
                 comment.getContent(),
                 comment.getTask().getId(),
