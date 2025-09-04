@@ -12,7 +12,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 1. 현재 로그인한 사용자 정보 조회 (deletedAt이 null인 유저만)
     Optional<User> findByIdAndDeletedAtIsNull(Long id);
 
-    // 2. 팀에 속하지 않은 사용자 목록 조회
+    // 2. 팀에 추가 가능한 사용자 목록 조회
     @Query("""
         SELECT u
         FROM User u
@@ -23,5 +23,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
               WHERE tm.team.id = :teamId
           )
         """)
-    List<User> findAvailableUserByTeamId(Long teamId);
+    List<User> findAvailableUsersByTeamId(Long teamId);
 }
