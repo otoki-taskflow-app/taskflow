@@ -49,6 +49,16 @@ public class ApiResponse<T> {
         return ResponseEntity.ok(new ApiResponse<>(true, message, data, LocalDateTime.now()));
     }
 
+    /**
+     * 성공적인 삭제 요청에 대한 응답을 반환하는 메서드
+     * `data`는 항상 `null` 값을 반환
+     *
+     * @param message 응답 메세지
+     * @return HTTP 200 OK 응답과 함께 응답 메세지만 반환
+     */
+    public static <T> ResponseEntity<ApiResponse<T>> deleteSuccess(String message) {
+        return ResponseEntity.ok(new ApiResponse<>(true, message, null, LocalDateTime.now()));
+    }
 
     /**
      * 에러에 대한 응답을 반환하는 메서드
@@ -58,7 +68,6 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> error(ErrorCode error) {
         return new ApiResponse<>(false, error.getMessage(), null, LocalDateTime.now());
     }
-
 
     /**
      * 성공적인 요청에 대한 페이지 응답을 반환하는 메서드
