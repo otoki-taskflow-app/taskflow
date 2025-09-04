@@ -33,15 +33,39 @@ public class UserInternalService {
     }
 
 
-    // 2. 팀에 추가 가능한 사용자 목록 조회
-    public List<UserResponse> getAvailableUsers(Long teamId) {
+    // 2. 특정 팀 사용자 제외 조회
+    public List<UserResponse> getUsersNotInTeam(Long teamId) {
 
-        List<User> users = userRepository.findAvailableUsersByTeamId(teamId);
+        List<User> users = userRepository.findUsersNotInTeam(teamId);
 
         List<UserResponse> responseList = new ArrayList<>();
         for (User user : users) {
             responseList.add(new UserResponse(user));
         }
         return responseList;
+    }
+
+    // 3. 전체 사용자 조회
+    public List<UserResponse> getAllUsers() {
+        List<User> users = userRepository.findAllActiveUsers();
+
+        List<UserResponse> responseList = new ArrayList<>();
+        for (User user : users) {
+            responseList.add(new UserResponse(user));
+        }
+        return responseList;
+    }
+
+    // 4. 팀에 추가 가능한 사용자 목록 조회
+    public List<UserResponse> getSelectableUsers(Long teamId) {
+        if (teamId != null) {
+            // TODO: 팀 존재 여부 확인 로직 추가 예정
+//             if (!teamExternalService.existsById(teamId)) {
+//                 throw new GlobalException(ErrorCode.TEAM_NOT_FOUND);
+//             }
+            return getUsersNotInTeam(teamId);
+        } else {
+            return getAllUsers();
+        }
     }
 }
