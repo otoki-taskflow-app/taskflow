@@ -1,7 +1,6 @@
 package com.example.taskflow.domain.user.service;
 
 import com.example.taskflow.common.exception.GlobalException;
-import com.example.taskflow.domain.team.repository.TeamRepository;
 import com.example.taskflow.domain.user.Error.UserErrorCode;
 import com.example.taskflow.domain.user.dto.UserResponse;
 import com.example.taskflow.domain.user.entity.User;
