@@ -13,18 +13,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByIdAndDeletedAtIsNull(Long id);
 
     // 2. 특정 팀에 속한 사용자 목록
-    List<User> findAllByTeamIdAndDeletedAtIsNull(Long teamId);
+    List<User> findActiveUsersByTeamId(Long teamId);
 
     // 3. 팀에 추가 가능한 사용자 목록 조회
     @Query("""
         SELECT u
         FROM User u
         WHERE u.deletedAt IS NULL
-          AND u.id NOT IN (
-              SELECT tm.user.id
-              FROM TeamMember tm
-              WHERE tm.team.id = :teamId
-          )
-        """)
-    List<User> findAvailableUsersByTeamId(Long teamId);
+            AND (u.team.id != :teamId OR u.team IS NULL)
+    """)
+    List<User> findUsersNotInTeam(Long teamId);
+
+    // 4. 전체 유저 조회
+    List<User> findAllActiveUsers();
 }

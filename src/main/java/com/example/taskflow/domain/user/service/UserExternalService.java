@@ -19,7 +19,6 @@ import java.util.List;
 public class UserExternalService {
 
     private final UserRepository userRepository;
-    private final TeamRepository teamRepository;
 
 
     // 1. 단일 유저 조회 (탈퇴한 유저 제외)
@@ -31,7 +30,7 @@ public class UserExternalService {
     // 2. 여러 유저 조회 (탈퇴한 유저 제외)
     // 팀 멤버 목록 조회 시 사용
     public List<User> getActiveMemberByTeamId(Long teamId) {
-        List<User> users = userRepository.findAllByTeamIdAndDeletedAtIsNull(teamId);
+        List<User> users = userRepository.findActiveUsersByTeamId(teamId);
 
         if (users.isEmpty()) {
             throw new GlobalException(UserErrorCode.USER_NOT_FOUND);
