@@ -6,10 +6,10 @@ public record TaskUserResponse(Long id, String username, String name, String ema
 
     public static TaskUserResponse from(Task task) {
         return new TaskUserResponse(
-                task.getUser().getId(),
-                task.getUser().getUsername(),
-                task.getUser().getName(),
-                task.getUser().getEmail()
+                task.getAssignee().getId(),
+                task.getAssignee().getUsername(),
+                task.getAssignee().getName(),
+                task.getAssignee().getEmail()
         );
     }
 }
