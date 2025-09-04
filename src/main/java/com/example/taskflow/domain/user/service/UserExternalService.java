@@ -2,7 +2,6 @@ package com.example.taskflow.domain.user.service;
 
 
 import com.example.taskflow.common.exception.GlobalException;
-import com.example.taskflow.domain.team.entity.Team;
 import com.example.taskflow.domain.team.repository.TeamRepository;
 import com.example.taskflow.domain.user.Error.UserErrorCode;
 import com.example.taskflow.domain.user.dto.UserResponse;
@@ -12,9 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
