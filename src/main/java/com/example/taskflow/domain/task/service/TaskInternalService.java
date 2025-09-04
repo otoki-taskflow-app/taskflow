@@ -7,10 +7,9 @@ import com.example.taskflow.domain.task.dto.Response.*;
 import com.example.taskflow.domain.task.entity.Task;
 import com.example.taskflow.domain.task.enums.Status;
 import com.example.taskflow.domain.task.exception.InvalidTaskException;
-import com.example.taskflow.domain.task.exception.TaskErrorCode;
 import com.example.taskflow.domain.task.repository.TaskRepository;
 import com.example.taskflow.domain.user.entity.User;
-import com.example.taskflow.domain.user.repository.UserRepository;
+import com.example.taskflow.domain.user.service.UserExternalService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -24,23 +23,30 @@ import org.springframework.transaction.annotation.Transactional;
 public class TaskInternalService {
 
     private final TaskRepository taskRepository;
-    private final UserRepository userRepository;
+    private final UserExternalService userExternalService;
 
     /**
      * 새로운 Task 를 생성하는 메서드
      * 유저가 입력한 정보를 Task Entity로 만들어 저장
      *
      * @param request 유저가 입력한 내용
+     * @param userId 로그인한 유저의 ID (입력한 assigneeId가 없다면 사용)
      * @return 생성된 태스크의 응답 DTO로 변환 후 반환
      * @throws InvalidTaskException 담당자 Id에 해당하는 유저를 찾을 수 없을 경우 발생
      */
     @Transactional
-    public TaskCreateResponse createTask(TaskCreateRequest request) {
+    public TaskCreateResponse createTask(TaskCreateRequest request, Long userId) {
 
-        // TODO : UserExternalService 가 생기면 추후 리팩토링
-        User user = userRepository.findById(request.assigneeId()).orElseThrow(()->new InvalidTaskException(TaskErrorCode.USER_NOT_FOUND));
+        User user;
 
-        Task task = new Task(
+        // 입력받은 assigneeId 가 없을 경우 로그인 중인 유저를 등록
+        if (request.assigneeId() == null) {
+            user = userExternalService.getUserById(userId);
+        } else {
+            user = userExternalService.getUserById(request.assigneeId());
+        }
+
+        Task task = Task.create(
                 request.title(),
                 request.description(),
                 request.priority(),
@@ -93,13 +99,13 @@ public class TaskInternalService {
      * @param taskId 해당 task의 ID
      * @param request 유저가 입력한 내용
      * @return 수정된 Task 정보를 DTO로 반환
-     * @throws InvalidTaskException 해당 ID의 Task 와 User가 존재하지 않는 경우 발생
+     * @throws InvalidTaskException 해당 ID의 Task가 존재하지 않는 경우 발생
      */
     @Transactional
-    public TaskUpdateResponse updateTask(Long taskId, @Valid TaskUpdateRequest request) {
+    public TaskUpdateResponse updateTask(Long taskId, TaskUpdateRequest request) {
 
-        // user 와 task 조회 없다면 InvalidTaskException
-        User findUser = userRepository.findById(request.assigneeId()).orElseThrow(()->new InvalidTaskException(TaskErrorCode.USER_NOT_FOUND));
+        // user 와 task 조회 없을시 오류 발생
+        User findUser = userExternalService.getUserById(request.assigneeId());
         Task findTask = taskRepository.findByIdAndDeletedAtIsNullOrElseThrow(taskId);
 
         findTask.updateTask(
@@ -123,7 +129,7 @@ public class TaskInternalService {
      * @return 수정된 Task 정보를 DTO로 반환
      * @throws InvalidTaskException 해당 ID의 Task가 존재하지 않는 경우 발생
      */
-    public TaskStatusUpdateResponse statusUpdate(Long taskId, @Valid TaskStatusUpdateRequest request) {
+    public TaskStatusUpdateResponse statusUpdate(Long taskId, TaskStatusUpdateRequest request) {
 
         // task 조회 없다면 InvalidTaskException
         Task findTask = taskRepository.findByIdAndDeletedAtIsNullOrElseThrow(taskId);
