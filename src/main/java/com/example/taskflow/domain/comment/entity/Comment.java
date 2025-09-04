@@ -5,6 +5,7 @@ import com.example.taskflow.domain.task.entity.Task;
 import com.example.taskflow.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,7 +29,7 @@ public class Comment extends BaseEntity {
     @Column(nullable = false, length = 100)
     private String content;
 
-
+    @Builder
     public Comment(String content, User user, Task task) { // 생성자
         this.content = content;
         this.user = user;
@@ -38,5 +39,4 @@ public class Comment extends BaseEntity {
     public void updateComment(String content){
         this.content = content;
     }
-
 }

@@ -3,7 +3,6 @@ package com.example.taskflow.domain.comment.dto.response;
 import com.example.taskflow.domain.comment.entity.Comment;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
 import java.time.LocalDateTime;
 
 @Getter
@@ -28,8 +27,4 @@ public class CommentCreateResponse {
                 comment.getUpdatedAt()
         );
     }
-
-
-
-
 }
