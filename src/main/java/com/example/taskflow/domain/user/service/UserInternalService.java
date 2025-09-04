@@ -25,6 +25,6 @@ public class UserInternalService {
     // 2. 팀에 속하지 않은 유저 목록 조회 (탈퇴한 유저 제외)
     @Transactional(readOnly = true)
     public List<User> findAvailableUsersByTeamId(Long teamId) {
-        return userRepository.findAvailableUsersByTeamId(teamId);
+        return userRepository.findAvailableUserByTeamId(teamId);
     }
 }
