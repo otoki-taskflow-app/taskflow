@@ -1,7 +1,6 @@
 package com.example.taskflow.domain.team.dto.Response;
 
 import com.example.taskflow.domain.team.entity.Team;
-import com.example.taskflow.domain.user.dto.UserResponse;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -20,7 +19,7 @@ public class TeamResponse {
         this.name = team.getName();
         this.description = team.getDescription();
         this.createdAt = team.getCreatedAt();
-        this.member = team.getMember().stream().map(user -> new TeamMemberResponse(user.getId())).toList();
+        this.member = team.getMember().stream().map(TeamMemberResponse::new).toList();
     }
 
     public static TeamResponse from(Team team) {

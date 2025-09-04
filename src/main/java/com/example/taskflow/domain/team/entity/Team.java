@@ -40,10 +40,16 @@ public class Team extends BaseEntity {
     }
 
     public void addMember(User user) {
-        member.add(user);
+        if(!this.member.contains(user)){
+            this.member.add(user);
+            user.setTeam(this);
+        }
     }
 
     public void removeMember(User user) {
-        member.remove(user);
+        if(this.member.contains(user)){
+            this.member.remove(user);
+            user.setTeam(null);
+        }
     }
 }

@@ -4,5 +4,5 @@ import lombok.Getter;
 
 @Getter
 public class TeamMemberRequest {
-    private Long memberId;
+    private Long userId;
 }
