@@ -1,4 +1,4 @@
-package com.example.taskflow.domain.auth.util;
+package com.example.taskflow.domain.auth.security;
 
 import com.example.taskflow.common.exception.ErrorCode;
 import com.example.taskflow.common.response.ApiResponse;
@@ -11,16 +11,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {

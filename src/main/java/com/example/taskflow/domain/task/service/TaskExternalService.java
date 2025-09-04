@@ -12,7 +12,7 @@ public class TaskExternalService {
 
     private final TaskRepository taskRepository;
 
-    public Task getTaskById(Long id) {
-        return taskRepository.findByIdOrElseThrow(id);
+    public Task getTaskById(Long taskId) {
+        return taskRepository.findByIdAndDeletedAtIsNullOrElseThrow(taskId);
     }
 }
