@@ -1,38 +1,52 @@
 package com.example.taskflow.domain.user.service;
 
 
+import com.example.taskflow.common.exception.GlobalException;
+import com.example.taskflow.domain.team.entity.Team;
+import com.example.taskflow.domain.team.repository.TeamRepository;
+import com.example.taskflow.domain.user.Error.UserErrorCode;
+import com.example.taskflow.domain.user.dto.UserResponse;
 import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserExternalService {
 
     private final UserRepository userRepository;
+    private final TeamRepository teamRepository;
 
-    // 0. 회원 가입 시 유저 정보 저장
-//    @Transactional
-//    public User save(User user) {
-//        return userRepository.save(user);
-//    }
 
-    // 1. 유저 단일 조회 (탈퇴한 유저 제외)
-    @Transactional(readOnly = true)
-    public Optional<User> findByIdAndDeletedAtIsNull(Long id) {
-        return userRepository.findByIdAndDeletedAtIsNull(id);
+    // 1. 단일 유저 조회 (탈퇴한 유저 제외)
+    public UserResponse getFindById(Long id) {
+        User user = userRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new GlobalException(UserErrorCode.USER_NOT_FOUND));
+        return new UserResponse(user);
     }
 
-    // 2. 팀원 목록 조회 (탈퇴한 유저 제외)
-    @Transactional(readOnly = true)
-    public List<User> findAllByIdAndDeletedAtIsNull(List<Long> userIds) {
-        return userRepository.findAllById(userIds).stream()
-                .filter(user -> user.getDeletedAt() == null)
+    // 2. 여러 유저 조회 (탈퇴한 유저 제외)
+    // 팀 멤버 목록 조회 시 사용
+    public List<UserResponse> getActiveMemberByTeamId(Long teamId) {
+        if (!teamRepository.existsById(teamId)) {
+            throw new GlobalException(UserErrorCode.TEAM_NOT_FOUND);
+        }
+
+        List<User> users = userRepository.findAllByTeamIdAndDeletedAtIsNull(teamId);
+
+        if (users.isEmpty()) {
+            throw new GlobalException(UserErrorCode.USER_NOT_FOUND);
+        }
+
+        return users.stream()
+                .map(UserResponse::new)
                 .toList();
     }
 
