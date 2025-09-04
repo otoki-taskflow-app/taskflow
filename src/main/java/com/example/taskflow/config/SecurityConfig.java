@@ -1,7 +1,7 @@
 package com.example.taskflow.config;
 
-import com.example.taskflow.domain.auth.util.JwtFilter;
-import com.example.taskflow.domain.auth.util.JwtProvider;
+import com.example.taskflow.domain.auth.security.JwtFilter;
+import com.example.taskflow.domain.auth.security.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
