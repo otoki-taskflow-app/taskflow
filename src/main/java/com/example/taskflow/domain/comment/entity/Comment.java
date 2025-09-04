@@ -5,6 +5,7 @@ import com.example.taskflow.domain.task.entity.Task;
 import com.example.taskflow.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,18 +26,25 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "task_id", nullable = false)
     private Task task;
 
-    @Column(nullable = false, length = 100)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id") // 부모 댓글 (null이면 일반 댓글)
+    private Comment parentId;
+
     private String content;
 
-
-    public Comment(String content, User user, Task task) { // 생성자
+    @Builder
+    public Comment(String content, User user, Task task, Comment parentId) { // 생성자
         this.content = content;
         this.user = user;
         this.task = task;
+        this.parentId = parentId;
     }
 
     public void updateComment(String content){
         this.content = content;
     }
 
+    public boolean isReply() { // 대댓글인지 판단
+        return this.parentId != null;
+    }
 }
