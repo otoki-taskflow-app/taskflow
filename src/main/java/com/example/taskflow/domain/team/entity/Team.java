@@ -26,7 +26,8 @@ public class Team extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
+
+    @OneToMany(fetch = FetchType.LAZY)
     private List<User> member = new ArrayList<>();
 
     public Team(String name, String description) {
