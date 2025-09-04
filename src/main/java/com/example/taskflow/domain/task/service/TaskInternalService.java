@@ -13,6 +13,8 @@ import com.example.taskflow.domain.user.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,6 +23,7 @@ public class TaskInternalService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     public TaskCreateResponse createTask(TaskCreateRequest request, Long userId) {
 
         User user = userRepository.findById(userId).orElseThrow(()->new InvalidTaskException(TaskErrorCode.USER_NOT_FOUND));

@@ -2,6 +2,7 @@ package com.example.taskflow.common.response;
 
 import com.example.taskflow.common.exception.ErrorCode;
 import lombok.Getter;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -24,9 +25,10 @@ public class ApiResponse<T> {
 
     /**
      * 생성된 리소스에 대한 응답을 반환하는 메서드
-     * 주어진 데이터를 포함하여 HTTP 201 Created 상태 코드와 함께 응답을 반환
+     * 주어진 데이터를 포함하여 HTTP 201 Created 상태 코드와 메세지를 함께 응답을 반환
      *
      * @param data 생성된 리소스의 데이터
+     * @param message 응답 메세지
      * @return HTTP 201 Created 응답과 함께 생성된 데이터가 포함된 ApiResponseDto
      */
     public static <T> ResponseEntity<ApiResponse<T>> created(T data, String message) {
@@ -37,9 +39,10 @@ public class ApiResponse<T> {
 
     /**
      * 성공적인 요청에 대한 응답을 반환하는 메서드
-     * 주어진 데이터를 포함하여 HTTP 200 OK 상태 코드와 함께 응답을 반환
+     * 주어진 데이터를 포함하여 HTTP 200 OK 상태 코드와 메세지를 함께 응답을 반환
      *
      * @param data 요청 성공 시 반환할 데이터
+     * @param message 응답 메세지
      * @return HTTP 200 OK 응답과 함께 성공 데이터가 포함된 ApiResponseDto
      */
     public static <T> ResponseEntity<ApiResponse<T>> success(T data, String message) {
@@ -54,5 +57,19 @@ public class ApiResponse<T> {
      */
     public static <T> ApiResponse<T> error(ErrorCode error) {
         return new ApiResponse<>(false, error.getMessage(), null, LocalDateTime.now());
+    }
+
+
+    /**
+     * 성공적인 요청에 대한 페이지 응답을 반환하는 메서드
+     * 주어진 Page 데이터를 PageResponse로 변환하여 HTTP 200 OK 상태 코드와 메세지를 함께 응답을 반환
+     *
+     * @param page 페이지로 조회된 데이터
+     * @param message 응답 메세지
+     * @return HTTP 200 OK 응답과 함께 PageResponse가 포함된 ApiResponse
+     */
+    public static <T> ResponseEntity<ApiResponse<PageResponse<T>>> pageSuccess(Page<T> page, String message) {
+        PageResponse<T> data = PageResponse.fromPage(page);
+        return ResponseEntity.ok(new ApiResponse<>(true, message, data, LocalDateTime.now()));
     }
 }
