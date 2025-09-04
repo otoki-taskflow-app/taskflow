@@ -6,6 +6,7 @@ import com.example.taskflow.domain.auth.dto.request.AuthRegisterRequest;
 import com.example.taskflow.domain.auth.dto.response.AuthLoginResponse;
 import com.example.taskflow.domain.auth.dto.response.AuthResponse;
 import com.example.taskflow.domain.auth.service.AuthInternalService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> signup(
-            @RequestBody AuthRegisterRequest request
+            @Valid @RequestBody AuthRegisterRequest request
     ) {
         AuthResponse response = authInternalService.signup(request);
 
