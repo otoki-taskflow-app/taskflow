@@ -37,6 +37,8 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
             throw new AuthException(AuthErrorCode.INVALID_AUTHENTICATION);
         }
 
-        return authentication.getPrincipal();
+        AuthUser authUser = (AuthUser) authentication.getPrincipal();
+
+        return authUser.getAuthUserDto().getId();
     }
 }

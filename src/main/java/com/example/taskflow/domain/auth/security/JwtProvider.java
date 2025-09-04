@@ -7,6 +7,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,6 +26,9 @@ public class JwtProvider {
     private final Key key;
     private final long EXPIRE_TIME;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+
+    @Autowired
+    private JwtAuthUserService jwtAuthUserService;
 
     public JwtProvider(
             @Value("${jwt.secret.key}") String secretKey,
@@ -63,8 +67,12 @@ public class JwtProvider {
      * @return Authentication
      */
     public Authentication getAuthentication(String token) {
+        Long userId = getUserId(token);
+
+        AuthUser authUser = jwtAuthUserService.loadAuthUser(userId);
+
         return new UsernamePasswordAuthenticationToken(
-                getUserId(token),
+                authUser,
                 null,
                 createAuthorityList(getRole(token))
         );
