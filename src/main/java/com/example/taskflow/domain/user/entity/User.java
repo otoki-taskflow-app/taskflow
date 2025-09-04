@@ -1,6 +1,7 @@
 package com.example.taskflow.domain.user.entity;
 
 import com.example.taskflow.common.entity.BaseEntity;
+import com.example.taskflow.domain.team.entity.Team;
 import com.example.taskflow.domain.user.enums.Role;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -35,6 +36,10 @@ public class User extends BaseEntity {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_id")
+    private Team team;
 
     public User(String username, String password, String email, String name, Role role) {
         this.username = username;
