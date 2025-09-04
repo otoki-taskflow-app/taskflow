@@ -5,22 +5,33 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-@Getter
-public class UserResponse {
-
-    private final Long id;
-    private final String username;
-    private final String email;
-    private final String name;
-    private final String role;
-    private final LocalDateTime createdAt;
-
+public record UserResponse(
+        Long id,
+        String username,
+        String name,
+        String email,
+        String role,
+        LocalDateTime createdAt
+) {
     public UserResponse(User user) {
-        this.id = user.getId();
-        this.username = user.getUsername();
-        this.email = user.getEmail();
-        this.name = user.getName();
-        this.role = user.getRole().name();
-        this.createdAt = user.getCreatedAt();
+        this(
+                user.getId(),
+                user.getUsername(),
+                user.getName(),
+                user.getEmail(),
+                user.getRole().name(),
+                user.getCreatedAt()
+        );
     }
+
+//    public static UserResponse from(User user) {
+//        return new UserResponse(
+//                user.getId(),
+//                user.getUsername(),
+//                user.getName(),
+//                user.getEmail(),
+//                user.getRole().name(),
+//                user.getCreatedAt()
+//        );
+//    }
 }

@@ -1,5 +1,6 @@
 package com.example.taskflow.domain.user.controller;
 
+import com.example.taskflow.common.exception.GlobalException;
 import com.example.taskflow.common.response.ApiResponse;
 import com.example.taskflow.domain.user.dto.UserResponse;
 import com.example.taskflow.domain.user.service.UserInternalService;
@@ -33,11 +34,11 @@ public class UserController {
 
     // 2. 팀에 추가 가능한 사용자 목록 조회
     @GetMapping("/available")
-    public ResponseEntity<ApiResponse<List<UserResponse>>> getAvailableUsers(@RequestParam("teamId") Long teamId) {
+    public ResponseEntity<ApiResponse<List<UserResponse>>> getAvailableUsers(
+            @RequestParam(value = "teamId", required = false) Long teamId) {
 
-        // TeamExternalService 호출해서 팀 존재 여부 확인
+        List<UserResponse> responseList = userInternalService.getSelectableUsers(teamId);
 
-        List<UserResponse> responseList = userInternalService.getAvailableUsers(teamId);
         return ApiResponse.success(responseList, "사용 가능한 사용자 목록을 조회했습니다.");
     }
 }
