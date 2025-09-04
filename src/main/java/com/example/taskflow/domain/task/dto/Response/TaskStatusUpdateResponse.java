@@ -6,20 +6,20 @@ import com.example.taskflow.domain.task.enums.Status;
 
 import java.time.LocalDateTime;
 
-public record TaskCreateResponse(Long id, String title, String description, LocalDateTime dueDate, Priority priority, Status status, Long assigneeId, TaskUserResponse assignee, LocalDateTime createdAt, LocalDateTime updatedAt) {
+public record TaskStatusUpdateResponse(Long id, String title, String description, Status status, Priority priority, Long assigneeId, TaskUserResponse assignee, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime dueDate) {
 
-    public static TaskCreateResponse from(Task task) {
-        return new TaskCreateResponse(
+    public static TaskStatusUpdateResponse from(Task task) {
+        return new TaskStatusUpdateResponse(
                 task.getId(),
                 task.getTitle(),
                 task.getDescription(),
-                task.getDueDate(),
-                task.getPriority(),
                 task.getStatus(),
+                task.getPriority(),
                 task.getAssignee().getId(),
                 TaskUserResponse.from(task),
                 task.getCreatedAt(),
-                task.getUpdatedAt()
+                task.getUpdatedAt(),
+                task.getDueDate()
         );
     }
 }
