@@ -64,7 +64,7 @@ public class TaskInternalService {
     @Transactional (readOnly=true)
     public Page<TaskGetResponse> getAllTasks(Pageable pageable) {
 
-        Page<Task> tasks = taskRepository.findAllAndDeletedAtIsNull(pageable);
+        Page<Task> tasks = taskRepository.findAllByDeletedAtIsNull(pageable);
 
         return tasks.map(TaskGetResponse::from);
     }
