@@ -13,6 +13,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "teams")
 public class Team extends BaseEntity {
 
     @Id
