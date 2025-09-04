@@ -30,6 +30,10 @@ public class AuthInternalService {
             throw new AuthException(AuthErrorCode.USERNAME_ALREADY_EXISTS);
         }
 
+        if (authRepository.existsByEmail(request.email())) {
+            throw new AuthException(AuthErrorCode.EMAIL_ALREADY_EXISTS);
+        }
+
         // TODO: 비밀번호 인코딩
 
         User user = User.create(
