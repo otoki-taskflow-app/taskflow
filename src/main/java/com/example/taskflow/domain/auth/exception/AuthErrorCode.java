@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum AuthErrorCode implements ErrorCode {
 
     USERNAME_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 존재하는 사용자명입니다"),
+    EMAIL_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다"),
     INVALID_LOGIN(HttpStatus.UNAUTHORIZED, "잘못된 사용자명 또는 비밀번호입니다"),
     TOKEN_MISSING(HttpStatus.UNAUTHORIZED, "인증이 필요합니다"),
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
