@@ -24,7 +24,7 @@ public class UserController {
      */
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UserResponse>> getMyInfo(
-            @RequestAttribute(value = "userId", required = false) Long userId) {
+            @RequestAttribute(value = "userId") Long userId) {
 
         UserResponse response = userInternalService.getMyInfo(userId);
         return ApiResponse.success(response, "사용자 정보를 조회했습니다.");
@@ -34,6 +34,8 @@ public class UserController {
     // 2. 팀에 추가 가능한 사용자 목록 조회
     @GetMapping("/available")
     public ResponseEntity<ApiResponse<List<UserResponse>>> getAvailableUsers(@RequestParam("teamId") Long teamId) {
+
+        // TeamExternalService 호출해서 팀 존재 여부 확인
 
         List<UserResponse> responseList = userInternalService.getAvailableUsers(teamId);
         return ApiResponse.success(responseList, "사용 가능한 사용자 목록을 조회했습니다.");

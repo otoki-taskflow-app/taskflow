@@ -19,7 +19,6 @@ import java.util.List;
 public class UserInternalService {
 
     private final UserRepository userRepository;
-    private final TeamRepository teamRepository;
 
     // 1. 현재 로그인한 사용자 정보 조회
     public UserResponse getMyInfo(Long userId) {
@@ -37,9 +36,6 @@ public class UserInternalService {
 
     // 2. 팀에 추가 가능한 사용자 목록 조회
     public List<UserResponse> getAvailableUsers(Long teamId) {
-
-        if (!teamRepository.existsById(teamId)) {
-            throw new GlobalException(UserErrorCode.TEAM_NOT_FOUND); }
 
         List<User> users = userRepository.findAvailableUsersByTeamId(teamId);
 
