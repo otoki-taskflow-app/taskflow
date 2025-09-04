@@ -13,9 +13,8 @@ import com.example.taskflow.domain.user.enums.Role;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
-
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -24,6 +23,7 @@ public class AuthInternalService {
     private final AuthRepository authRepository;
     private final JwtProvider jwtProvider;
 
+    @Transactional
     public AuthResponse signup(AuthRegisterRequest request) {
 
         if (authRepository.existsByUsername(request.username())) {
@@ -45,6 +45,7 @@ public class AuthInternalService {
         return AuthResponse.from(savedUser);
     }
 
+    @Transactional
     public AuthLoginResponse login(AuthLoginRequest request) {
         User user = authRepository.findByUsername(request.username()).orElseThrow(() ->
                 new AuthException(AuthErrorCode.INVALID_LOGIN));
