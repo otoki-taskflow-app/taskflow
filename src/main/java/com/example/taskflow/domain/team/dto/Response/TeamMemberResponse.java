@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class TeamMemberRequest {
+public class TeamMemberResponse {
     //팀 멤버 추가용
     private final Long userId;
 }

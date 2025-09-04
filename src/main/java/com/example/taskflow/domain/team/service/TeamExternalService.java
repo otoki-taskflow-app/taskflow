@@ -6,6 +6,7 @@ import com.example.taskflow.domain.team.entity.Team;
 import com.example.taskflow.domain.team.exception.InvalidTeamException;
 import com.example.taskflow.domain.team.exception.TeamErrorCode;
 import com.example.taskflow.domain.team.repository.TeamRepository;
+import com.example.taskflow.domain.user.dto.UserResponse;
 import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +25,12 @@ public class TeamExternalService {
     //팀 생성
     @Transactional
     public TeamResponse createTeam(TeamRequest request) {
-        Team team = new Team(request.getName(), request.getDescription());
-        //팀 이름 중복 에러 400
-        if (teamRepository.findByName(request.getName()).isPresent())
+        //팀이름 중복 확인
+        if (teamRepository.findByName(request.getName()).isPresent()) {
             throw new InvalidTeamException(TeamErrorCode.TEAM_NAME_DUPLICATE);
+        }
 
+        Team team = new Team(request.getName(), request.getDescription());
         Team saveTeam = teamRepository.save(team);
         return TeamResponse.from(saveTeam);
     }
@@ -37,10 +39,11 @@ public class TeamExternalService {
     @Transactional
     public TeamResponse createTeamMember(Long teamId, Long memberId) {
         Team team = teamRepository.findByIdOrElseThrow(teamId);
-        User user = userRepository.findByIdOrElseThrow(memberId);
-        //사용자가 이미 팀멤버 에러 400
-        if (team.getMember().contains(user)) throw new InvalidTeamException(TeamErrorCode.TEAM_USER_DUPLICATE);
-
+        User user = userRepository.findByIdAndDeletedAtIsNull(memberId)
+                .orElseThrow(() -> new InvalidTeamException(TeamErrorCode.User_NOT_FOUND));
+        //이미 멤버인지 확인
+        boolean isMember = team.getMember().stream().anyMatch(u -> u.getId().equals(memberId));
+        if (isMember) throw new InvalidTeamException(TeamErrorCode.TEAM_USER_DUPLICATE);
         team.addMember(user);
         teamRepository.save(team);
         return TeamResponse.from(team);
@@ -64,7 +67,7 @@ public class TeamExternalService {
     @Transactional(readOnly = true)
     public List<UserResponse> getMemberByTeamId(Long teamId) {
         Team team = teamRepository.findByIdOrElseThrow(teamId);
-        return team.getMember().stream().map(UserResponse::from).collect(Collectors.toList());
+        return team.getMember().stream().map(UserResponse::new).collect(Collectors.toList());
     }
 
     //팀 정보 수정
@@ -86,8 +89,10 @@ public class TeamExternalService {
     @Transactional
     public void deleteTeamMember(Long teamId, Long memberId) {
         Team team = teamRepository.findByIdOrElseThrow(teamId);
-        User user = userRepository.findByIdOrElseThrow(memberId);
+        User user = userRepository.findByIdAndDeletedAtIsNull(memberId)
+                .orElseThrow(() -> new InvalidTeamException(TeamErrorCode.User_NOT_FOUND));
+        boolean isMember = team.getMember().stream().anyMatch(u -> u.getId().equals(memberId));
+        if(!isMember) throw new InvalidTeamException(TeamErrorCode.User_NOT_IN_TEAM);
         team.removeMember(user);
-        teamRepository.save(team);
     }
 }
