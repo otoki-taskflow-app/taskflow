@@ -1,4 +1,4 @@
-package com.example.taskflow.domain.auth.util;
+package com.example.taskflow.domain.auth.security;
 
 import com.example.taskflow.domain.auth.exception.AuthErrorCode;
 import com.example.taskflow.domain.auth.exception.AuthException;
