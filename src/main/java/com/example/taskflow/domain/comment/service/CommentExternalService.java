@@ -15,5 +15,6 @@ public class CommentExternalService {
 
     public Comment getCommentById(Long id) {
         return commentRepository.findById(id).orElseThrow(() -> new InvalidCommentException(CommentErrorCode.COMMENT_NOT_FOUND));
+
     }
 }
