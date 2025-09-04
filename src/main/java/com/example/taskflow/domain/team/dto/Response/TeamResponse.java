@@ -4,7 +4,6 @@ import com.example.taskflow.domain.team.entity.Team;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 @Getter
 public class TeamResponse {
@@ -14,7 +13,7 @@ public class TeamResponse {
     private LocalDateTime createdAt;
     private List<UserResponse> member;
 
-    private TeamResponse(Team team){
+    private TeamResponse(Team team) {
         this.id = team.getId();
         this.name = team.getName();
         this.description = team.getDescription();
@@ -22,5 +21,7 @@ public class TeamResponse {
         this.member = team.getMember().stream().map(UserResponse::from).toList();
     }
 
-    public static TeamResponse from(Team team){return new TeamResponse(team);}
+    public static TeamResponse from(Team team) {
+        return new TeamResponse(team);
+    }
 }
