@@ -4,6 +4,8 @@ import com.example.taskflow.common.response.ApiResponse;
 import com.example.taskflow.domain.team.dto.Request.TeamRequest;
 import com.example.taskflow.domain.team.dto.Response.TeamResponse;
 import com.example.taskflow.domain.team.entity.Team;
+import com.example.taskflow.domain.team.exception.InvalidTeamException;
+import com.example.taskflow.domain.team.exception.TeamErrorCode;
 import com.example.taskflow.domain.team.repository.TeamRepository;
 import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.repository.UserRepository;
@@ -25,14 +27,22 @@ public class TeamExternalService {
     @Transactional
     public TeamResponse createTeam(TeamRequest request) {
         Team team = new Team(request.getName(), request.getDescription());
+        //팀 이름 중복 에러 400
+        if (teamRepository.findByName(request.getName()).isPresent())
+            throw new InvalidTeamException(TeamErrorCode.TEAM_NAME_DUPLICATE);
+
         Team saveTeam = teamRepository.save(team);
         return TeamResponse.from(saveTeam);
     }
 
     //팀 멤버 추가
+    @Transactional
     public TeamResponse createTeamMember(Long teamId, Long memberId) {
         Team team = teamRepository.findByIdOrElseThrow(teamId);
         User user = userRepository.findByIdOrElseThrow(memberId);
+        //사용자가 이미 팀멤버 에러 400
+        if (team.getMember().contains(user)) throw new InvalidTeamException(TeamErrorCode.TEAM_USER_DUPLICATE);
+
         team.addMember(user);
         teamRepository.save(team);
         return TeamResponse.from(team);
@@ -69,7 +79,7 @@ public class TeamExternalService {
 
     //팀 삭제
     @Transactional
-    public void deleteTeam(Long id, TeamRequest request) {
+    public void deleteTeam(Long id) {
         Team team = teamRepository.findByIdOrElseThrow(id);
         teamRepository.delete(team);
     }
