@@ -3,12 +3,10 @@ package com.example.taskflow.domain.task.entity;
 import com.example.taskflow.common.entity.BaseEntity;
 import com.example.taskflow.domain.task.enums.Priority;
 import com.example.taskflow.domain.task.enums.Status;
-import com.example.taskflow.domain.task.exception.InvalidTaskException;
-import com.example.taskflow.domain.task.exception.TaskErrorCode;
 import com.example.taskflow.domain.user.entity.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,16 +21,21 @@ public class Task extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     private String title;
 
+    @NotNull
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @NotNull
     private LocalDateTime dueDate;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private Priority priority;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private Status status;
 
@@ -49,6 +52,10 @@ public class Task extends BaseEntity {
         this.dueDate = dueDate;
         this.status = status;
         this.assignee = assignee;
+    }
+
+    public static Task create(String title, String description, Priority priority, LocalDateTime dueDate, Status status, User assignee) {
+        return new Task(title, description, priority, dueDate, status, assignee);
     }
 
     public void updateTask(String title, String description, LocalDateTime dueDate, Priority priority, Status status, User assignee) {
