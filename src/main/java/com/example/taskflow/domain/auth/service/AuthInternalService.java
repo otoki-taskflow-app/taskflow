@@ -6,10 +6,11 @@ import com.example.taskflow.domain.auth.dto.request.AuthRegisterRequest;
 import com.example.taskflow.domain.auth.dto.request.AuthWithdrawRequest;
 import com.example.taskflow.domain.auth.dto.response.AuthLoginResponse;
 import com.example.taskflow.domain.auth.dto.response.AuthResponse;
+import com.example.taskflow.domain.auth.dto.response.TokenResponse;
+import com.example.taskflow.domain.auth.entity.RefreshToken;
 import com.example.taskflow.domain.auth.exception.AuthErrorCode;
 import com.example.taskflow.domain.auth.exception.AuthException;
 import com.example.taskflow.domain.auth.repository.AuthRepository;
-import com.example.taskflow.domain.auth.security.JwtProvider;
 import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.enums.Role;
 import lombok.AccessLevel;
@@ -25,8 +26,8 @@ import java.time.LocalDateTime;
 public class AuthInternalService {
 
     private final AuthRepository authRepository;
-    private final JwtProvider jwtProvider;
     private final PasswordEncoder passwordEncoder;
+    private final TokenInternalService tokenInternalService;
 
     @Transactional
     public AuthResponse signup(AuthRegisterRequest request) {
@@ -54,7 +55,7 @@ public class AuthInternalService {
         return AuthResponse.from(savedUser);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public AuthLoginResponse login(AuthLoginRequest request) {
         User user = authRepository.findByUsernameAndDeletedAtIsNull(request.username()).orElseThrow(() ->
                 new AuthException(AuthErrorCode.USER_WITHDRAWN));
@@ -63,9 +64,9 @@ public class AuthInternalService {
             throw new AuthException(AuthErrorCode.INVALID_LOGIN);
         }
 
-        String token = jwtProvider.createToken(user.getId(), user.getEmail(), user.getRole());
+        String accessToken = tokenInternalService.generateOrUpdateTokens(user);
 
-        return AuthLoginResponse.of(token);
+        return AuthLoginResponse.of(accessToken);
     }
 
     @Transactional
