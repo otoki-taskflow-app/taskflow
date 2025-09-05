@@ -25,12 +25,4 @@ public class TeamMemberResponse {
         this.role = user.getRole();
         this.createdAt = user.getCreatedAt();
     }
-    public TeamMemberResponse(User user) {
-        this.id = user.getId();
-        this.username = user.getUsername();
-        this.name = user.getName();
-        this.email = user.getEmail();
-        this.role = user.getRole();
-        this.createdAt = user.getCreatedAt();
-    }
 }

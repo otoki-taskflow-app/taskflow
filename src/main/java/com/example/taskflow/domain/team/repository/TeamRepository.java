@@ -3,7 +3,6 @@ package com.example.taskflow.domain.team.repository;
 import com.example.taskflow.domain.team.entity.Team;
 import com.example.taskflow.domain.team.exception.InvalidTeamException;
 import com.example.taskflow.domain.team.exception.TeamErrorCode;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
