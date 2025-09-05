@@ -48,4 +48,8 @@ public class User extends BaseEntity {
         this.name = name;
         this.role = role;
     }
+
+    public void setDeletedAt(LocalDateTime deletedAt) {
+        this.deletedAt = deletedAt;
+    }
 }
