@@ -8,18 +8,18 @@ import java.util.List;
 
 @Getter
 public class TeamResponse {
-    private Long id;
-    private String name;
-    private String description;
-    private LocalDateTime createdAt;
-    private List<TeamMemberResponse> members;
+    private final Long id;
+    private final String name;
+    private final String description;
+    private final LocalDateTime createdAt;
+    private final List<TeamMemberResponse> member;
 
     private TeamResponse(Team team) {
         this.id = team.getId();
         this.name = team.getName();
         this.description = team.getDescription();
         this.createdAt = team.getCreatedAt();
-        this.members = team.getMember().stream().map(TeamMemberResponse::new).toList();
+        this.member = team.getMember().stream().map(TeamMemberResponse::new).toList();
     }
 
     public static TeamResponse from(Team team) {
