@@ -2,6 +2,8 @@ package com.example.taskflow.domain.auth.service;
 
 import com.example.taskflow.domain.auth.dto.response.TokenResponse;
 import com.example.taskflow.domain.auth.entity.RefreshToken;
+import com.example.taskflow.domain.auth.exception.AuthErrorCode;
+import com.example.taskflow.domain.auth.exception.AuthException;
 import com.example.taskflow.domain.auth.repository.RefreshTokenRepository;
 import com.example.taskflow.domain.auth.security.JwtProvider;
 import com.example.taskflow.domain.user.entity.User;
@@ -38,5 +40,25 @@ public class TokenInternalService {
         }
 
         return token.accessToken();
+    }
+
+    @Transactional
+    public void logout(Long userId) {
+        refreshTokenRepository.findByUserId(userId)
+                .ifPresent(refreshTokenRepository::delete);
+    }
+
+    @Transactional(readOnly = true)
+    public RefreshToken findValidRefreshToken(Long userId) {
+        return refreshTokenRepository.findByUserId(userId)
+                .filter(token -> !token.isExpired())
+                .orElseThrow(() -> new AuthException(AuthErrorCode.TOKEN_EXPIRED));
+    }
+
+    @Transactional(readOnly = true)
+    public boolean hasRefreshToken(Long userId) {
+        return refreshTokenRepository.findByUserId(userId)
+                .map(token -> !token.isExpired())
+                .orElse(false);
     }
 }
