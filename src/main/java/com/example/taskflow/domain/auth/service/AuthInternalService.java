@@ -70,6 +70,11 @@ public class AuthInternalService {
     }
 
     @Transactional
+    public void logout(Long userId) {
+        tokenInternalService.logout(userId);
+    }
+
+    @Transactional
     public void withdraw(AuthWithdrawRequest request, Long userId) {
 
         User user = authRepository.findById(userId).orElseThrow(

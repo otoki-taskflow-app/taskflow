@@ -43,6 +43,15 @@ public class AuthController {
         return ApiResponse.created(response, "로그인이 완료되었습니다.");
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<AuthResponse>> logout(
+            @CurrentUser Long user
+    ) {
+        authInternalService.logout(user);
+
+        return ApiResponse.deleteSuccess("로그아웃이 완료되었습니다.");
+    }
+
     @PostMapping("/withdraw")
     public ResponseEntity<ApiResponse<AuthResponse>> withdraw(
             @RequestBody AuthWithdrawRequest request,
