@@ -1,25 +1,22 @@
 package com.example.taskflow.domain.comment.dto.response;
 
 import com.example.taskflow.domain.comment.entity.Comment;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import com.example.taskflow.domain.user.enums.Role;
 
-@Getter
-@AllArgsConstructor
-public class CommentUserResponse {
-    private Long id;
-    private String userName;
-    private String name;
-    private String email;
-    // private ?? role
+public record CommentUserResponse(
+        Long id,
+        String userName,
+        String name,
+        String email,
+        Role role) {
 
-    public static CommentUserResponse from(Comment comment) { // comment 엔티티의 작성자 user 정보를 꺼냄
+    public static CommentUserResponse from(Comment comment) {
         return new CommentUserResponse(
                 comment.getUser().getId(),
                 comment.getUser().getUsername(),
                 comment.getUser().getName(),
-                comment.getUser().getEmail()
+                comment.getUser().getEmail(),
+                comment.getUser().getRole()
         );
     }
-
 }

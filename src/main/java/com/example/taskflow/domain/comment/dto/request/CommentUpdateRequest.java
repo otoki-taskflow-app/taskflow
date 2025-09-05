@@ -1,3 +1,3 @@
 package com.example.taskflow.domain.comment.dto.request;
 
-public record CommentCreateRequest(String content) {}
+public record CommentUpdateRequest(String content) {}

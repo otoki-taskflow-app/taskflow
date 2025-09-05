@@ -7,7 +7,7 @@ import com.example.taskflow.domain.auth.dto.response.AuthResponse;
 import com.example.taskflow.domain.auth.exception.AuthErrorCode;
 import com.example.taskflow.domain.auth.exception.AuthException;
 import com.example.taskflow.domain.auth.repository.AuthRepository;
-import com.example.taskflow.domain.auth.util.JwtProvider;
+import com.example.taskflow.domain.auth.security.JwtProvider;
 import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.enums.Role;
 import lombok.AccessLevel;
