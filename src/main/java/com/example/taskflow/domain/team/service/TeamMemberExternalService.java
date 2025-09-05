@@ -19,8 +19,8 @@ public class TeamMemberExternalService {
     @Transactional(readOnly = true)
     public List<TeamMemberResponse> getMemberByTeamId(Long teamId) {
         teamRepository.findByIdOrElseThrow(teamId);
-        List<TeamMember> teamMembers = teamMemberRepository.findByTeamIdWithUsers(teamId);
-        return teamMembers.stream().map(TeamMemberResponse::new).toList();
+        List<TeamMember> teamMember = teamMemberRepository.findByTeamIdWithUsers(teamId);
+        return teamMember.stream().map(TeamMemberResponse::new).toList();
     }
 
     //추가 가능한 사용자 목록 조회
