@@ -1,7 +1,9 @@
 package com.example.taskflow.domain.auth.service;
 
+import com.example.taskflow.common.exception.CommonErrorCode;
 import com.example.taskflow.domain.auth.dto.request.AuthLoginRequest;
 import com.example.taskflow.domain.auth.dto.request.AuthRegisterRequest;
+import com.example.taskflow.domain.auth.dto.request.AuthWithdrawRequest;
 import com.example.taskflow.domain.auth.dto.response.AuthLoginResponse;
 import com.example.taskflow.domain.auth.dto.response.AuthResponse;
 import com.example.taskflow.domain.auth.exception.AuthErrorCode;
@@ -15,7 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -64,4 +67,18 @@ public class AuthInternalService {
 
         return AuthLoginResponse.of(token);
     }
+
+    @Transactional
+    public void withdraw(AuthWithdrawRequest request, Long userId) {
+
+        User user = authRepository.findById(userId).orElseThrow(
+                () -> new AuthException(CommonErrorCode.INVALID_USER));
+
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
+            throw new AuthException(AuthErrorCode.PASSWORD_MISSMATCH);
+        }
+
+        user.setDeletedAt(LocalDateTime.now());
+    }
+
 }
