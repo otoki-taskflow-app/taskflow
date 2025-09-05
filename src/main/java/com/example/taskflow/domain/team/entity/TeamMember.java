@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -16,6 +17,7 @@ public class TeamMember extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id")
     private Team team;
@@ -27,9 +29,5 @@ public class TeamMember extends BaseEntity{
     public TeamMember(Team team, User user) {
         this.team = team;
         this.user = user;
-    }
-
-    public void setTeam(Team team) {
-        this.team = team;
     }
 }
