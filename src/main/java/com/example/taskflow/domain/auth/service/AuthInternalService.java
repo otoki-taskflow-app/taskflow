@@ -56,7 +56,7 @@ public class AuthInternalService {
         User user = authRepository.findByUsername(request.username()).orElseThrow(() ->
                 new AuthException(AuthErrorCode.INVALID_LOGIN));
 
-        if (!ObjectUtils.nullSafeEquals(user.getPassword(), request.password())) {
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new AuthException(AuthErrorCode.INVALID_LOGIN);
         }
 
