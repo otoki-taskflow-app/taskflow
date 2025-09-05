@@ -1,5 +1,6 @@
 package com.example.taskflow.domain.auth.security;
 
+import com.example.taskflow.domain.auth.dto.response.TokenResponse;
 import com.example.taskflow.domain.auth.exception.AuthErrorCode;
 import com.example.taskflow.domain.auth.exception.AuthException;
 import com.example.taskflow.domain.user.enums.Role;
@@ -7,7 +8,6 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,41 +24,92 @@ import static org.springframework.security.core.authority.AuthorityUtils.createA
 public class JwtProvider {
 
     private final Key key;
-    private final long EXPIRE_TIME;
+    private final long ACCESS_EXPIRE_TIME;  // Access Token 만료 시간 (밀리초)
+    private final long REFRESH_EXPIRE_TIME; // Refresh Token 만료 시간 (밀리초)
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
-    @Autowired
-    private JwtAuthUserService jwtAuthUserService;
+    private final JwtAuthUserService jwtAuthUserService;
 
+    /**
+     * JWT Provider 생성자
+     *
+     * @param secretKey
+     * @param accessTime
+     * @param refreshTime
+     * @param jwtAuthUserService
+     */
     public JwtProvider(
             @Value("${jwt.secret.key}") String secretKey,
-            @Value("${jwt.token.expire-time}") long expireTime
+            @Value("${jwt.token.access-expire-time}") long accessTime,
+            @Value("${jwt.token.refresh-expire-time}") long refreshTime,
+            JwtAuthUserService jwtAuthUserService
     ) {
         byte[] bytes = Base64.getDecoder().decode(secretKey);
         this.key = Keys.hmacShaKeyFor(bytes);
-        this.EXPIRE_TIME = expireTime;
+        this.ACCESS_EXPIRE_TIME = accessTime;
+        this.REFRESH_EXPIRE_TIME = refreshTime;
+        this.jwtAuthUserService = jwtAuthUserService;
     }
 
     /**
-     * JWT 토큰 생성
+     * 로그인 시 Access Token과 Refresh Token 발급
+     *
+     * - Access Token: API 호출 시 사용, 클라이언트로 반환
+     * - Refresh Token: Redis에 저장, Access Token 재발급 시 사용
      *
      * @param userId 사용자 ID
      * @param email 사용자 이메일
-     * @param role 사용자 역할(Role Enum)
-     * @return JWT 토큰 문자열
+     * @param role 사용자 권한(Role Enum)
+     * @return Access Token 문자열
      */
-    public String createToken(Long userId, String email, Role role) {
-        Date date = new Date();
+    public TokenResponse createToken(Long userId, String email, Role role) {
+        long now = (new Date()).getTime();
 
-        return Jwts.builder()
-                        .setSubject(String.valueOf(userId))
-                        .claim("email", email)
-                        .claim("role", role.name())
-                        .setExpiration(new Date(date.getTime() + EXPIRE_TIME))
-                        .setIssuedAt(date)
-                        .signWith(key, signatureAlgorithm)
-                        .compact();
+        // Access Token 생성
+        Date accessTokenExpire = new Date(now + ACCESS_EXPIRE_TIME);
+        String accessToken = createAccessToken(userId, email, role, accessTokenExpire);
+
+        // Refresh Token 생성
+        Date refreshTokenExpire = new Date(now + REFRESH_EXPIRE_TIME);
+        String refreshToken = createRefreshToken(userId, refreshTokenExpire);
+
+        return TokenResponse.of(accessToken, refreshToken, REFRESH_EXPIRE_TIME);
     }
+
+    /**
+     * Access Token 생성
+     *
+     * @param userId
+     * @param email
+     * @param role
+     * @param expireDate
+     * @return
+     */
+    private String createAccessToken(Long userId, String email, Role role, Date expireDate) {
+        return Jwts.builder()
+                .setSubject(String.valueOf(userId))
+                .claim("email", email)
+                .claim("role", role.name())
+                .setExpiration(expireDate)
+                .signWith(key, signatureAlgorithm)
+                .compact();
+    }
+
+    /**
+     * Refresh Token 생성
+     *
+     * @param userId
+     * @param expireDate
+     * @return
+     */
+    private String createRefreshToken(Long userId, Date expireDate) {
+        return Jwts.builder()
+                .setSubject(String.valueOf(userId))
+                .setExpiration(expireDate)
+                .signWith(key, signatureAlgorithm)
+                .compact();
+    }
+
 
     /**
      * 토큰으로부터 받은 정보를 기반으로 Authentication 객체 반환
@@ -96,6 +147,10 @@ public class JwtProvider {
 
     /**
      * 토큰 정보 검증
+     *
+     * - 유효하지 않은 토큰
+     * - 만료된 토큰
+     * - 블랙리스트에 있는 토큰
      *
      * @param token
      * @return
