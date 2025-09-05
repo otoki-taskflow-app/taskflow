@@ -12,6 +12,7 @@ import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.enums.Role;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -22,6 +23,7 @@ public class AuthInternalService {
 
     private final AuthRepository authRepository;
     private final JwtProvider jwtProvider;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public AuthResponse signup(AuthRegisterRequest request) {
@@ -34,11 +36,11 @@ public class AuthInternalService {
             throw new AuthException(AuthErrorCode.EMAIL_ALREADY_EXISTS);
         }
 
-        // TODO: 비밀번호 인코딩
+        String encodePw = passwordEncoder.encode(request.password());
 
         User user = User.create(
                 request.username(),
-                request.password(),
+                encodePw,
                 request.email(),
                 request.name(),
                 Role.user
