@@ -2,7 +2,11 @@ package com.example.taskflow.domain.auth.security;
 
 import com.example.taskflow.common.exception.ErrorCode;
 import com.example.taskflow.common.response.ApiResponse;
+import com.example.taskflow.domain.auth.entity.RefreshToken;
+import com.example.taskflow.domain.auth.exception.AuthErrorCode;
 import com.example.taskflow.domain.auth.exception.AuthException;
+import com.example.taskflow.domain.auth.service.TokenInternalService;
+import com.example.taskflow.domain.user.enums.Role;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -11,6 +15,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
 
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,10 +24,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@Configuration
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
+    private final TokenInternalService tokenInternalService;
 
     private static String[] WHITELIST = {
             "/api/auth/register",
@@ -41,7 +48,19 @@ public class JwtFilter extends OncePerRequestFilter {
 
         try {
             String token = jwtProvider.resolveToken(request);
-            jwtProvider.validateToken(token);
+
+            try {
+                jwtProvider.validateAccessToken(token);
+            } catch (AuthException e) {
+                if (e.getErrorCode() == AuthErrorCode.TOKEN_EXPIRED) {
+                    token = handleExpiredAccessToken(token, response);
+                } else {
+                    throw e;
+                }
+            }
+
+            Long userId = jwtProvider.getUserIdAllowExpired(token);
+            tokenInternalService.findValidRefreshToken(userId);
 
             Authentication authentication = jwtProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -49,7 +68,28 @@ public class JwtFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } catch (AuthException e) {
             sendErrorResponse(response, e.getErrorCode(), e.getMessage());
+        } catch (IOException e) {
+            sendErrorResponse(response, AuthErrorCode.TOKEN_EXPIRED, e.getMessage());
         }
+    }
+
+    /**
+     * Access Token 만료 시 Refresh Token 검증 후 새 Access Token 발급
+     *
+     * @param expiredToken
+     * @param response
+     * @return
+     */
+    private String handleExpiredAccessToken(String expiredToken, HttpServletResponse response) {
+        Long userId = jwtProvider.getUserIdAllowExpired(expiredToken);
+
+        // 로그아웃 체크
+        tokenInternalService.findValidRefreshToken(userId);
+
+        String newToken = jwtProvider.refreshAccessToken(expiredToken);
+        response.setHeader("Authorization", "Bearer " + newToken);
+
+        return newToken;
     }
 
     private boolean isWhiteList(String url) {

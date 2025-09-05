@@ -110,6 +110,26 @@ public class JwtProvider {
                 .compact();
     }
 
+    public String refreshAccessToken(String token) {
+        Claims claims = extractClaimsAllowExpired(token);
+        Long userId = Long.parseLong(claims.getSubject());
+        String email = claims.get("email", String.class);
+        Role role = Role.valueOf(claims.get("role", String.class));
+
+        long now = (new Date()).getTime();
+        Date newExpire = new Date(now + ACCESS_EXPIRE_TIME);
+        return createAccessToken(userId, email, role, newExpire);
+    }
+
+    public void validateAccessToken(String token) {
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+        } catch (ExpiredJwtException e) {
+            throw new AuthException(AuthErrorCode.TOKEN_EXPIRED);
+        } catch (SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
+            throw new AuthException(AuthErrorCode.INVALID_TOKEN);
+        }
+    }
 
     /**
      * 토큰으로부터 받은 정보를 기반으로 Authentication 객체 반환
@@ -182,6 +202,27 @@ public class JwtProvider {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public Claims extractClaimsAllowExpired(String token) {
+        try {
+            // 정상 토큰이면 그대로
+            return Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (ExpiredJwtException e) {
+            // 만료된 토큰이라도 Claims는 반환
+            return e.getClaims();
+        } catch (JwtException e) {
+            // 다른 유효하지 않은 토큰
+            throw new AuthException(AuthErrorCode.INVALID_TOKEN);
+        }
+    }
+
+    public Long getUserIdAllowExpired(String token) {
+        return Long.parseLong(extractClaimsAllowExpired(token).getSubject());
     }
 
     /**
