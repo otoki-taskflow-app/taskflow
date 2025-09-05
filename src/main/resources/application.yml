@@ -20,4 +20,5 @@ jwt:
   secret:
     key: ${JWT_SECRET_KEY}
   token:
-    expire-time: ${JWT_EXPIRE_TIME}
+    access-expire-time: ${JWT_ACCESS_TOKEN_EXPIRE:3600000}
+    refresh-expire-time: ${JWT_REFRESH_TOKEN_EXPIRE:86400000}
