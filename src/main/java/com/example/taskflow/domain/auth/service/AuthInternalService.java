@@ -54,10 +54,10 @@ public class AuthInternalService {
         return AuthResponse.from(savedUser);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public AuthLoginResponse login(AuthLoginRequest request) {
-        User user = authRepository.findByUsername(request.username()).orElseThrow(() ->
-                new AuthException(AuthErrorCode.INVALID_LOGIN));
+        User user = authRepository.findByUsernameAndDeletedAtIsNull(request.username()).orElseThrow(() ->
+                new AuthException(AuthErrorCode.USER_WITHDRAWN));
 
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new AuthException(AuthErrorCode.INVALID_LOGIN);
