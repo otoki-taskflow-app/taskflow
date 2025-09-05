@@ -3,9 +3,9 @@ package com.example.taskflow.domain.team.repository;
 import com.example.taskflow.domain.team.entity.Team;
 import com.example.taskflow.domain.team.exception.InvalidTeamException;
 import com.example.taskflow.domain.team.exception.TeamErrorCode;
-import jakarta.persistence.Entity;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +17,8 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
 
     Optional<Team> findByName(String name);
 
-    @EntityGraph(attributePaths = {"member", "member.user"}) //팀과 멤버, 유저를 한 번에 조회
-    Optional<Team> findByIdWithMember(Long id);
+    @Query("SELECT DISTINCT t FROM Team t JOIN FETCH t.member tm JOIN FETCH tm.user u WHERE t.id = :id") //@EntityGraph 에러때문에 @Query로 수정
+    Optional<Team> findByTeamId(Long id);
+
+    List<Team> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String nameKeyword, String descriptionKeyword);
 }

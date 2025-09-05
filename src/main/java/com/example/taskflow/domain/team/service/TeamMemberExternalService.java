@@ -1,6 +1,7 @@
 package com.example.taskflow.domain.team.service;
 
 import com.example.taskflow.domain.team.dto.Response.TeamMemberResponse;
+import com.example.taskflow.domain.team.entity.Team;
 import com.example.taskflow.domain.team.entity.TeamMember;
 import com.example.taskflow.domain.team.repository.TeamMemberRepository;
 import com.example.taskflow.domain.team.repository.TeamRepository;
@@ -23,5 +24,10 @@ public class TeamMemberExternalService {
         return teamMember.stream().map(TeamMemberResponse::new).toList();
     }
 
-    //추가 가능한 사용자 목록 조회
+    public List<TeamSummary> searchByKeyword(String keyword) {
+        List<Team> teams = teamRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword);
+        return teams.stream()
+                .map(team -> new TeamSummary(team.getId(), team.getName(), team.getDescription()))
+                .toList();
+    }
 }

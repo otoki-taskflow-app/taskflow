@@ -20,7 +20,7 @@ public class TeamMemberInternalService {
     //팀 멤버 추가
     @Transactional
     public TeamResponse createTeamMember(Long teamId, Long memberId) {
-        Team team = teamRepository.findByIdWithMember(teamId)
+        Team team = teamRepository.findByTeamId(teamId)
                 .orElseThrow(() -> new InvalidTeamException(TeamErrorCode.TEAM_NOT_FOUND));
         User user = userRepository.findByIdAndDeletedAtIsNull(memberId)
                 .orElseThrow(() -> new InvalidTeamException(TeamErrorCode.USER_NOT_FOUND));
@@ -36,7 +36,7 @@ public class TeamMemberInternalService {
     //팀 멤버 삭제
     @Transactional
     public TeamResponse deleteTeamMember(Long teamId, Long memberId) {
-        Team team = teamRepository.findByIdWithMember(teamId)
+        Team team = teamRepository.findByTeamId(teamId)
                 .orElseThrow(() -> new InvalidTeamException(TeamErrorCode.TEAM_NOT_FOUND));
 
         TeamMember teamMemberToRemove = team.getMember().stream()

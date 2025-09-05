@@ -40,13 +40,4 @@ public class TeamMemberController {
         TeamResponse team = teamMemberInternalService.deleteTeamMember(teamId, memberId);
         return ApiResponse.success(team,"멤버가 성공적으로 제거되었습니다.");
     }
-
-    //추가 가능한 사용자 목록 조회
-    /*
-    @GetMapping("/{teamId}/members/available")
-    public ResponseEntity<ApiResponse<List<UserResponse>>> getAvailableUsers(@PathVariable Long teamId) {
-        List<UserResponse> member = teamMemberExternalService.getAvailableUsers(teamId);
-        return ApiResponse.success(member, "사용 가능한 사용자 목록을 조회했습니다.");
-    }
-    */
 }
