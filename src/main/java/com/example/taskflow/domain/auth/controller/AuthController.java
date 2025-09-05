@@ -3,8 +3,11 @@ package com.example.taskflow.domain.auth.controller;
 import com.example.taskflow.common.response.ApiResponse;
 import com.example.taskflow.domain.auth.dto.request.AuthLoginRequest;
 import com.example.taskflow.domain.auth.dto.request.AuthRegisterRequest;
+import com.example.taskflow.domain.auth.dto.request.AuthWithdrawRequest;
 import com.example.taskflow.domain.auth.dto.response.AuthLoginResponse;
 import com.example.taskflow.domain.auth.dto.response.AuthResponse;
+import com.example.taskflow.domain.auth.security.AuthUser;
+import com.example.taskflow.domain.auth.security.annotation.CurrentUser;
 import com.example.taskflow.domain.auth.service.AuthInternalService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -38,5 +41,15 @@ public class AuthController {
         AuthLoginResponse response = authInternalService.login(request);
 
         return ApiResponse.created(response, "로그인이 완료되었습니다.");
+    }
+
+    @PostMapping("/withdraw")
+    public ResponseEntity<ApiResponse<AuthResponse>> withdraw(
+            @RequestBody AuthWithdrawRequest request,
+            @CurrentUser Long userId
+    ) {
+        authInternalService.withdraw(request, userId);
+
+        return ApiResponse.deleteSuccess("회원탈퇴가 완료되었습니다.");
     }
 }
