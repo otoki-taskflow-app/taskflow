@@ -35,7 +35,7 @@ public class TeamInternalService {
     public TeamResponse createTeamMember(Long teamId, Long memberId) {
         Team team = teamRepository.findByIdOrElseThrow(teamId);
         User user = userRepository.findByIdAndDeletedAtIsNull(memberId)
-                .orElseThrow(() -> new InvalidTeamException(TeamErrorCode.User_NOT_FOUND));
+                .orElseThrow(() -> new InvalidTeamException(TeamErrorCode.USER_NOT_FOUND));
         //이미 멤버인지 확인
         boolean isMember = team.getMember().stream().anyMatch(u -> u.getId().equals(memberId));
         if (isMember) throw new InvalidTeamException(TeamErrorCode.TEAM_USER_DUPLICATE);
@@ -61,12 +61,13 @@ public class TeamInternalService {
 
     //팀 멤버 삭제
     @Transactional
-    public void deleteTeamMember(Long teamId, Long memberId) {
+    public TeamResponse deleteTeamMember(Long teamId, Long memberId) {
         Team team = teamRepository.findByIdOrElseThrow(teamId);
         User user = userRepository.findByIdAndDeletedAtIsNull(memberId)
-                .orElseThrow(() -> new InvalidTeamException(TeamErrorCode.User_NOT_FOUND));
+                .orElseThrow(() -> new InvalidTeamException(TeamErrorCode.USER_NOT_FOUND));
         boolean isMember = team.getMember().stream().anyMatch(u -> u.getId().equals(memberId));
-        if(!isMember) throw new InvalidTeamException(TeamErrorCode.User_NOT_IN_TEAM);
+        if(!isMember) throw new InvalidTeamException(TeamErrorCode.USER_NOT_IN_TEAM);
         team.removeMember(user);
+        return TeamResponse.from(team);
     }
 }
