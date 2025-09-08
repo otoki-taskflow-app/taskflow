@@ -1,3 +1,7 @@
 package com.example.taskflow.domain.comment.dto.request;
 
-public record CommentCreateRequest(String content) {}
+import jakarta.validation.constraints.NotBlank;
+
+public record CommentCreateRequest(
+        @NotBlank
+        String content) {}
