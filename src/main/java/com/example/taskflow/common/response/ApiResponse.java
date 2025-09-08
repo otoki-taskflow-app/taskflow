@@ -70,6 +70,15 @@ public class ApiResponse<T> {
     }
 
     /**
+     * 에러에 대한 응답을 반환하는 메서드
+     * 이 메서드는 DTO 필드에 지정된 Valid 어노테이션에서의 메세지를 반환
+     * `data`는 항상 `null' 값을 반환하며 `success` 값은 `false`로 반환
+     */
+    public static <T> ApiResponse<T> error(String message) {
+        return new ApiResponse<>(false, message, null, LocalDateTime.now());
+    }
+
+    /**
      * 성공적인 요청에 대한 페이지 응답을 반환하는 메서드
      * 주어진 Page 데이터를 PageResponse로 변환하여 HTTP 200 OK 상태 코드와 메세지를 함께 응답을 반환
      *
