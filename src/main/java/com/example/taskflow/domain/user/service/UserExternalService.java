@@ -2,8 +2,8 @@ package com.example.taskflow.domain.user.service;
 
 
 import com.example.taskflow.common.exception.GlobalException;
-import com.example.taskflow.domain.team.repository.TeamRepository;
-import com.example.taskflow.domain.user.Error.UserErrorCode;
+import com.example.taskflow.domain.search.dto.UserSummary;
+import com.example.taskflow.domain.user.exception.UserErrorCode;
 import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +37,15 @@ public class UserExternalService {
         }
 
         return users;
+    }
+
+    // 3. 관련 키워드로 유저 조회
+    public List<UserSummary> searchByKeyword(String keyword) {
+        return userRepository
+                .findByNameContainingIgnoreCaseOrEmailContainingIgnoreCase(keyword, keyword)
+                .stream()
+                .map(UserSummary::from)
+                .toList();
     }
 
 }
