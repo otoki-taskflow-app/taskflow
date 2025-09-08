@@ -1,6 +1,7 @@
 package com.example.taskflow.domain.user.controller;
 
 import com.example.taskflow.common.response.ApiResponse;
+import com.example.taskflow.domain.auth.security.annotation.CurrentUser;
 import com.example.taskflow.domain.user.dto.UserResponse;
 import com.example.taskflow.domain.user.service.UserInternalService;
 import lombok.RequiredArgsConstructor;

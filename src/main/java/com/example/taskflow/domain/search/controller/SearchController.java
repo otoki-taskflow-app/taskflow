@@ -1,12 +1,10 @@
 package com.example.taskflow.domain.search.controller;
 
-import com.example.taskflow.common.exception.GlobalException;
 import com.example.taskflow.common.response.ApiResponse;
 import com.example.taskflow.domain.search.dto.SearchResult;
 import com.example.taskflow.domain.search.exception.SearchErrorCode;
 import com.example.taskflow.domain.search.exception.SearchException;
 import com.example.taskflow.domain.search.service.SearchService;
-import com.example.taskflow.domain.user.exception.UserErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
