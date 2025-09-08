@@ -43,7 +43,7 @@ public class UserInternalService {
     // 3. 전체 사용자 조회
     public List<UserResponse> getAllUsers() {
 
-        List<User> users = userRepository.findAllActiveUsers();
+        List<User> users = userRepository.findAllByDeletedAtIsNull();
 
         return users.stream()
                 .map(UserResponse::from)
