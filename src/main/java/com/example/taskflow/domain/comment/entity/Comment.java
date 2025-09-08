@@ -30,6 +30,7 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "parent_id") // 부모 댓글 (null이면 일반 댓글)
     private Comment parentId;
 
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @Builder
