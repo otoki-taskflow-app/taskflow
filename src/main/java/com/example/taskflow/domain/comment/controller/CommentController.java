@@ -2,6 +2,7 @@ package com.example.taskflow.domain.comment.controller;
 
 import com.example.taskflow.common.response.ApiResponse;
 import com.example.taskflow.common.response.PageResponse;
+import com.example.taskflow.domain.auth.security.annotation.CurrentUser;
 import com.example.taskflow.domain.comment.dto.request.CommentCreateRequest;
 import com.example.taskflow.domain.comment.dto.request.CommentUpdateRequest;
 import com.example.taskflow.domain.comment.dto.response.CommentCreateResponse;
@@ -22,7 +23,7 @@ public class CommentController {
     @PostMapping // CREATE
     public ResponseEntity<ApiResponse<CommentCreateResponse>> createComment(
             @RequestBody CommentCreateRequest request,
-            @RequestParam Long userId, // 이 부분은 나중에
+            @CurrentUser Long userId,
             @PathVariable Long taskId) {
         CommentCreateResponse response = commentInternalService.createComment(request, userId, taskId);
         return ApiResponse.created(response, "댓글이 생성되었습니다. ");
@@ -51,18 +52,18 @@ public class CommentController {
 
     @DeleteMapping("/{commentId}") // DELETE
     public ResponseEntity<ApiResponse<Void>> deleteComment(
-            @RequestParam Long userId, // 이 부분은 나중에
+            @CurrentUser Long userId,
             @PathVariable Long taskId,
             @PathVariable Long commentId
     ) {
-        commentInternalService.deleteComment(userId, taskId, commentId);
-        return ApiResponse.deleteSuccess("댓글이 삭제되었습니다.");
+        String message = commentInternalService.deleteComment(userId, taskId, commentId);
+        return ApiResponse.deleteSuccess(message);
     }
 
     @PostMapping("/{parentId}/replies")
     public ResponseEntity<ApiResponse<CommentCreateResponse>> createReplyComment(
             @RequestBody CommentCreateRequest request,
-            @RequestParam Long userId,
+            @CurrentUser Long userId,
             @PathVariable Long taskId,
             @PathVariable Long parentId
     ) {
