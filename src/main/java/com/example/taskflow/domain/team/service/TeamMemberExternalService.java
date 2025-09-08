@@ -1,5 +1,7 @@
 package com.example.taskflow.domain.team.service;
 
+import com.example.taskflow.domain.search.dto.TeamSummary;
+import com.example.taskflow.domain.search.dto.UserSummary;
 import com.example.taskflow.domain.team.dto.Response.TeamMemberResponse;
 import com.example.taskflow.domain.team.entity.Team;
 import com.example.taskflow.domain.team.entity.TeamMember;
@@ -22,12 +24,5 @@ public class TeamMemberExternalService {
         teamRepository.findByIdOrElseThrow(teamId);
         List<TeamMember> teamMember = teamMemberRepository.findByTeamIdWithUsers(teamId);
         return teamMember.stream().map(TeamMemberResponse::new).toList();
-    }
-
-    public List<TeamSummary> searchByKeyword(String keyword) {
-        List<Team> teams = teamRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword);
-        return teams.stream()
-                .map(team -> new TeamSummary(team.getId(), team.getName(), team.getDescription()))
-                .toList();
     }
 }

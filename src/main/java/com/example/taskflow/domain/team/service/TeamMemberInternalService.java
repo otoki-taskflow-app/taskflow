@@ -23,7 +23,7 @@ public class TeamMemberInternalService {
         Team team = teamRepository.findByTeamId(teamId)
                 .orElseThrow(() -> new InvalidTeamException(TeamErrorCode.TEAM_NOT_FOUND));
         User user = userRepository.findByIdAndDeletedAtIsNull(memberId)
-                .orElseThrow(() -> new InvalidTeamException(TeamErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new InvalidTeamException(TeamErrorCode.User_NOT_FOUND));
 
         boolean isMember = team.getMember().stream().anyMatch(tm -> tm.getUser().getId().equals(memberId));
         if (isMember) throw new InvalidTeamException(TeamErrorCode.TEAM_USER_DUPLICATE);
@@ -42,7 +42,7 @@ public class TeamMemberInternalService {
         TeamMember teamMemberToRemove = team.getMember().stream()
                 .filter(tm -> tm.getUser().getId().equals(memberId))
                 .findFirst()//스트림에서 조건을 만족하는 첫번쨰 요소를 찾음
-                .orElseThrow(() -> new InvalidTeamException(TeamErrorCode.USER_NOT_IN_TEAM));
+                .orElseThrow(() -> new InvalidTeamException(TeamErrorCode.User_NOT_IN_TEAM));
 
         team.removeMember(teamMemberToRemove);
         teamRepository.save(team);//명시적 저장
