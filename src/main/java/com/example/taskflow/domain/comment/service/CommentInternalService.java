@@ -35,10 +35,10 @@ public class CommentInternalService {
     @Transactional // CREATE
     public CommentCreateResponse createComment(CommentCreateRequest request, Long userId, Long taskId) {
 
-        User user = userExternalService.getFindById(userId);
+        User user = userExternalService.getUserById(userId);
         Task task = taskExternalService.getTaskById(taskId);
 
-        Comment comment = new Comment(request.content(), user, task, null);
+        Comment comment = Comment.create(request.content(), user, task, null);
         Comment savedComment = commentRepository.save(comment);
         return CommentCreateResponse.from(savedComment, CommentUserResponse.from(savedComment));
     }
@@ -73,7 +73,7 @@ public class CommentInternalService {
 
     @Transactional // DELETE
     public String deleteComment(Long userId, Long taskId, Long commentId) {
-        userExternalService.getFindById(userId);
+        userExternalService.getUserById(userId);
         taskExternalService.getTaskById(taskId);
 
         Comment comment = commentRepository.findById(commentId)
@@ -98,7 +98,7 @@ public class CommentInternalService {
 
     @Transactional // 대댓글
     public CommentCreateResponse createReplyComment(CommentCreateRequest request, Long userId, Long taskId, Long parentId) {
-        User user = userExternalService.getFindById(userId);
+        User user = userExternalService.getUserById(userId);
         Task task = taskExternalService.getTaskById(taskId);
         Comment parent = commentRepository.findById(parentId)
                 .orElseThrow(() -> new InvalidCommentException(CommentErrorCode.COMMENT_NOT_FOUND));
@@ -110,7 +110,7 @@ public class CommentInternalService {
             throw new InvalidCommentException(CommentErrorCode.COMMENT_TASK_MISMATCH);
         }
 
-        Comment reply = new Comment(request.content(), user, task, parent);
+        Comment reply = Comment.create(request.content(), user, task, parent);
         Comment saved = commentRepository.save(reply);
         return CommentCreateResponse.from(saved, CommentUserResponse.from(saved));
     }

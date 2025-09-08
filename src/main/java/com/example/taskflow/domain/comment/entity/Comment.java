@@ -32,12 +32,15 @@ public class Comment extends BaseEntity {
 
     private String content;
 
-    @Builder
-    public Comment(String content, User user, Task task, Comment parentId) { // 생성자
+    private Comment(String content, User user, Task task, Comment parentId) { // 생성자
         this.content = content;
         this.user = user;
         this.task = task;
         this.parentId = parentId;
+    }
+
+    public static Comment create(String content, User user, Task task, Comment parentId) {
+        return new Comment(content, user, task, parentId);
     }
 
     public void updateComment(String content){
