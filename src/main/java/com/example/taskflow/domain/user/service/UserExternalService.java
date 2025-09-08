@@ -22,7 +22,7 @@ public class UserExternalService {
 
 
     // 1. 단일 유저 조회 (탈퇴한 유저 제외)
-    public User getFindById(Long id) {
+    public User getUserById(Long id) {
         return userRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new GlobalException(UserErrorCode.USER_NOT_FOUND));
     }
