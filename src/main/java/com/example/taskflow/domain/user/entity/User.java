@@ -50,6 +50,10 @@ public class User extends BaseEntity {
         this.role = role;
     }
 
+    public static User create(String username, String password, String email, String name, Role role) {
+        return new User(username, password, email, name, role);
+    }
+
     public void setDeletedAt(LocalDateTime deletedAt) {
         this.deletedAt = deletedAt;
     }
