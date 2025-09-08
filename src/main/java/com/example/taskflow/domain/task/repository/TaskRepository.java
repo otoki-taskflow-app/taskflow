@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
@@ -16,6 +17,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     Page<Task> findAllByDeletedAtIsNull(Pageable pageable);
 
     Optional<Task> findByIdAndDeletedAtIsNull(Long id);
+
+    List<Task> findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String title, String description);
 
     default Task findByIdAndDeletedAtIsNullOrElseThrow(Long id) {
         return findByIdAndDeletedAtIsNull(id).orElseThrow(() -> new InvalidTaskException(TaskErrorCode.TASK_NOT_FOUND));

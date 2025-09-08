@@ -10,7 +10,6 @@ import com.example.taskflow.domain.task.exception.InvalidTaskException;
 import com.example.taskflow.domain.task.repository.TaskRepository;
 import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.service.UserExternalService;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,7 +31,6 @@ public class TaskInternalService {
      * @param request 유저가 입력한 내용
      * @param userId 로그인한 유저의 ID (입력한 assigneeId가 없다면 사용)
      * @return 생성된 태스크의 응답 DTO로 변환 후 반환
-     * @throws InvalidTaskException 담당자 Id에 해당하는 유저를 찾을 수 없을 경우 발생
      */
     @Transactional
     public TaskCreateResponse createTask(TaskCreateRequest request, Long userId) {
