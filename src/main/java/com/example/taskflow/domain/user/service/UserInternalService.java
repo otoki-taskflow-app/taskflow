@@ -24,7 +24,7 @@ public class UserInternalService {
     public UserResponse getMyInfo(Long userId) {
 
         User user = userRepository.findByIdAndDeletedAtIsNull(userId)
-                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new UserException(UserErrorCode.UNAUTHORIZED));
 
         return UserResponse.from(user);
     }
