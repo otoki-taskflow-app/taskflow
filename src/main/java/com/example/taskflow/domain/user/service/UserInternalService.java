@@ -1,15 +1,15 @@
 package com.example.taskflow.domain.user.service;
 
-import com.example.taskflow.common.exception.GlobalException;
-import com.example.taskflow.domain.user.Error.UserErrorCode;
+import com.example.taskflow.domain.team.service.TeamExternalService;
+import com.example.taskflow.domain.user.exception.UserErrorCode;
 import com.example.taskflow.domain.user.dto.UserResponse;
 import com.example.taskflow.domain.user.entity.User;
+import com.example.taskflow.domain.user.exception.UserException;
 import com.example.taskflow.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,18 +18,15 @@ import java.util.List;
 public class UserInternalService {
 
     private final UserRepository userRepository;
+//    private final TeamExternalService teamExternalService;
 
     // 1. 현재 로그인한 사용자 정보 조회
     public UserResponse getMyInfo(Long userId) {
 
-        if (userId == null) {
-            throw new GlobalException(UserErrorCode.UNAUTHORIZED);
-        }
-
         User user = userRepository.findByIdAndDeletedAtIsNull(userId)
-                .orElseThrow(() -> new GlobalException(UserErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
-        return new UserResponse(user);
+        return UserResponse.from(user);
     }
 
 
@@ -38,34 +35,29 @@ public class UserInternalService {
 
         List<User> users = userRepository.findUsersNotInTeam(teamId);
 
-        List<UserResponse> responseList = new ArrayList<>();
-        for (User user : users) {
-            responseList.add(new UserResponse(user));
-        }
-        return responseList;
+        return users.stream()
+                .map(UserResponse::from)
+                .toList();
     }
 
     // 3. 전체 사용자 조회
     public List<UserResponse> getAllUsers() {
+
         List<User> users = userRepository.findAllActiveUsers();
 
-        List<UserResponse> responseList = new ArrayList<>();
-        for (User user : users) {
-            responseList.add(new UserResponse(user));
-        }
-        return responseList;
+        return users.stream()
+                .map(UserResponse::from)
+                .toList();
     }
 
     // 4. 팀에 추가 가능한 사용자 목록 조회
     public List<UserResponse> getSelectableUsers(Long teamId) {
         if (teamId != null) {
-            // TODO: 팀 존재 여부 확인 로직 추가 예정
-//             if (!teamExternalService.existsById(teamId)) {
-//                 throw new GlobalException(ErrorCode.TEAM_NOT_FOUND);
-//             }
+//            팀 검증 포함할 시 (TeamExternalService에 코드 추가 필요)
+//            teamExternalService.requireExisting(teamId);
             return getUsersNotInTeam(teamId);
-        } else {
-            return getAllUsers();
         }
+
+        return getAllUsers();
     }
 }
