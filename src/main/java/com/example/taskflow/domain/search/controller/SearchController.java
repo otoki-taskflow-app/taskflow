@@ -2,6 +2,8 @@ package com.example.taskflow.domain.search.controller;
 
 import com.example.taskflow.common.response.ApiResponse;
 import com.example.taskflow.domain.search.dto.SearchResult;
+import com.example.taskflow.domain.search.exception.SearchErrorCode;
+import com.example.taskflow.domain.search.exception.SearchException;
 import com.example.taskflow.domain.search.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,10 @@ public class SearchController {
      */
     @GetMapping
     public ResponseEntity<ApiResponse<SearchResult>> search(@RequestParam("q") String query) {
+        if (query == null || query.trim().isEmpty()) {
+            throw new SearchException(SearchErrorCode.EMPTY_QUERY);
+        }
+
         SearchResult result = searchService.searchAll(query);
         return ApiResponse.success(result, "검색 완료");
     }

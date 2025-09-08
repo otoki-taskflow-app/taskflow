@@ -18,13 +18,13 @@ import java.util.List;
 public class UserInternalService {
 
     private final UserRepository userRepository;
-//    private final TeamExternalService teamExternalService;
+    private final TeamExternalService teamExternalService;
 
     // 1. 현재 로그인한 사용자 정보 조회
     public UserResponse getMyInfo(Long userId) {
 
         User user = userRepository.findByIdAndDeletedAtIsNull(userId)
-                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new UserException(UserErrorCode.UNAUTHORIZED));
 
         return UserResponse.from(user);
     }
@@ -53,8 +53,7 @@ public class UserInternalService {
     // 4. 팀에 추가 가능한 사용자 목록 조회
     public List<UserResponse> getSelectableUsers(Long teamId) {
         if (teamId != null) {
-//            팀 검증 포함할 시 (TeamExternalService에 코드 추가 필요)
-//            teamExternalService.requireExisting(teamId);
+            teamExternalService.getTeamById(teamId);
             return getUsersNotInTeam(teamId);
         }
 

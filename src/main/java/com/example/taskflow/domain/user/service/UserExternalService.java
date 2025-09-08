@@ -1,10 +1,10 @@
 package com.example.taskflow.domain.user.service;
 
 
-import com.example.taskflow.common.exception.GlobalException;
 import com.example.taskflow.domain.search.dto.UserSummary;
 import com.example.taskflow.domain.user.exception.UserErrorCode;
 import com.example.taskflow.domain.user.entity.User;
+import com.example.taskflow.domain.user.exception.UserException;
 import com.example.taskflow.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,9 +22,9 @@ public class UserExternalService {
 
 
     // 1. 단일 유저 조회 (탈퇴한 유저 제외)
-    public User getFindById(Long id) {
+    public User getUserById(Long id) {
         return userRepository.findByIdAndDeletedAtIsNull(id)
-                .orElseThrow(() -> new GlobalException(UserErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
     }
 
     // 2. 여러 유저 조회 (탈퇴한 유저 제외)
@@ -33,7 +33,7 @@ public class UserExternalService {
         List<User> users = userRepository.findActiveUsersByTeamId(teamId);
 
         if (users.isEmpty()) {
-            throw new GlobalException(UserErrorCode.USER_NOT_FOUND);
+            throw new UserException(UserErrorCode.USER_NOT_FOUND);
         }
 
         return users;
