@@ -1,0 +1,37 @@
+package com.example.taskflow.domain.team.entity;
+
+import com.example.taskflow.common.entity.BaseEntity;
+import com.example.taskflow.domain.user.entity.User;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "team_members")
+public class TeamMember extends BaseEntity{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_id")
+    private Team team;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private User user;
+
+    protected TeamMember(Team team, User user) {
+        this.team = team;
+        this.user = user;
+    }
+
+    public static TeamMember of(Team team, User user) {
+        return new TeamMember(team, user);
+    }
+}

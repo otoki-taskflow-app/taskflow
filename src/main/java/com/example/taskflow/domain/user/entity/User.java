@@ -1,6 +1,7 @@
 package com.example.taskflow.domain.user.entity;
 
 import com.example.taskflow.common.entity.BaseEntity;
+import com.example.taskflow.domain.team.entity.TeamMember;
 import com.example.taskflow.domain.user.enums.Role;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
