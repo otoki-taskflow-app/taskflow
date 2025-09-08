@@ -16,7 +16,6 @@ public record TaskSummary (
                 task.getTitle(),
                 task.getDescription(),
                 task.getStatus(),
-                // task 엔티티에 Assignee 추가 필요
                 Assignee.from(task.getAssignee())
         );
     }
