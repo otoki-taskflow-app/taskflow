@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
-    @EntityGraph(attributePaths = "user")
+    @EntityGraph(attributePaths = "assignee")
     Page<Task> findAllByDeletedAtIsNull(Pageable pageable);
 
     Optional<Task> findByIdAndDeletedAtIsNull(Long id);
