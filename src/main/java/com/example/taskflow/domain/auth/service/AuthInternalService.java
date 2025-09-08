@@ -47,7 +47,7 @@ public class AuthInternalService {
                 encodePw,
                 request.email(),
                 request.name(),
-                Role.user
+                Role.USER
         );
 
         User savedUser = authRepository.save(user);
