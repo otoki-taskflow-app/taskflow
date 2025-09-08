@@ -1,6 +1,5 @@
 package com.example.taskflow.domain.user.controller;
 
-import com.example.taskflow.common.exception.GlobalException;
 import com.example.taskflow.common.response.ApiResponse;
 import com.example.taskflow.domain.user.dto.UserResponse;
 import com.example.taskflow.domain.user.service.UserInternalService;
@@ -18,14 +17,8 @@ public class UserController {
     private final UserInternalService userInternalService;
 
     // 1. 현재 로그인한 사용자 정보 조회
-    /*
-     전제: JwtFilter에 다음 코드 추가 필요
-     Long userId = jwtProvider.getUserId(token);  -> userId 추출
-     request.setAttribute("userId", userId);
-     */
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<UserResponse>> getMyInfo(
-            @RequestAttribute(value = "userId") Long userId) {
+    public ResponseEntity<ApiResponse<UserResponse>> getMyInfo(@CurrentUser Long userId) {
 
         UserResponse response = userInternalService.getMyInfo(userId);
         return ApiResponse.success(response, "사용자 정보를 조회했습니다.");
