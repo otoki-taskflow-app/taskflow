@@ -26,8 +26,12 @@ public class TeamMember extends BaseEntity{
     @JoinColumn(name = "member_id")
     private User user;
 
-    public TeamMember(Team team, User user) {
+    protected TeamMember(Team team, User user) {
         this.team = team;
         this.user = user;
+    }
+
+    public static TeamMember of(Team team, User user) {
+        return new TeamMember(team, user);
     }
 }

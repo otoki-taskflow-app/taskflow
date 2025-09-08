@@ -21,7 +21,7 @@ public class TeamInternalService {
         if (teamRepository.findByName(request.getName()).isPresent()) {
             throw new InvalidTeamException(TeamErrorCode.TEAM_NAME_DUPLICATE);
         }
-        Team team = new Team(request.getName(), request.getDescription());
+        Team team = Team.of(request.getName(), request.getDescription());
         Team savedTeam = teamRepository.save(team);
         return TeamResponse.from(savedTeam);
     }

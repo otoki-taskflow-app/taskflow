@@ -15,27 +15,27 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/teams")
+@RequestMapping("/api/teams/{teamId}/members")
 public class TeamMemberController {
     private final TeamMemberExternalService teamMemberExternalService;
     private final TeamMemberInternalService teamMemberInternalService;
 
     //팀 멤버 목록 조회
-    @GetMapping("/{teamId}/members")
+    @GetMapping
     public ResponseEntity<ApiResponse<List<TeamMemberResponse>>> getTeamMember(@PathVariable Long teamId) {
         List<TeamMemberResponse> team = teamMemberExternalService.getMemberByTeamId(teamId);
         return ApiResponse.success(team,"팀 멤버 목록을 조회했습니다.");
     }
 
     //팀 멤버 추가
-    @PostMapping("/{teamId}/members")
+    @PostMapping
     public ResponseEntity<ApiResponse<TeamResponse>> addMember(@PathVariable Long teamId,@Valid @RequestBody TeamMemberRequest teamMemberRequest){
         TeamResponse team = teamMemberInternalService.createTeamMember(teamId, teamMemberRequest.getUserId());
         return ApiResponse.success(team,"멤버가 성공적으로 추가되었습니다.");
     }
 
     //팀 멤버 제거
-    @DeleteMapping("/{teamId}/members/{memberId}")
+    @DeleteMapping("/{memberId}")
     public ResponseEntity<ApiResponse<TeamResponse>> deleteMember(@PathVariable Long teamId,@Valid @PathVariable Long memberId){
         TeamResponse team = teamMemberInternalService.deleteTeamMember(teamId, memberId);
         return ApiResponse.success(team,"멤버가 성공적으로 제거되었습니다.");

@@ -28,9 +28,13 @@ public class Team extends BaseEntity {
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TeamMember> member = new ArrayList<>();
 
-    public Team(String name, String description) {
+    protected Team(String name, String description) {
         this.name = name;
         this.description = description;
+    }
+
+    public static Team of(String name, String description) {
+        return new Team(name, description);
     }
 
     public void updateTeam(String name, String description) {

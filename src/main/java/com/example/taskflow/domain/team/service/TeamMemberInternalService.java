@@ -27,7 +27,7 @@ public class TeamMemberInternalService {
 
         boolean isMember = team.getMember().stream().anyMatch(tm -> tm.getUser().getId().equals(memberId));
         if (isMember) throw new InvalidTeamException(TeamErrorCode.TEAM_USER_DUPLICATE);
-        TeamMember teamMember = new TeamMember(team, user);
+        TeamMember teamMember = TeamMember.of(team, user);
         team.addMember(teamMember);
         teamRepository.save(team);//명시적 저장
         return TeamResponse.from(team);
