@@ -44,6 +44,7 @@ public class CommentInternalService {
     @Transactional // UPDATE
     public CommentUpdateResponse updateComment(CommentUpdateRequest request, Long taskId, Long commentId) {
         taskExternalService.getTaskById(taskId);
+
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new InvalidCommentException(CommentErrorCode.COMMENT_NOT_FOUND));
 
@@ -55,9 +56,10 @@ public class CommentInternalService {
         return CommentUpdateResponse.from(comment, CommentUserResponse.from(comment));
     }
 
-    @Transactional(readOnly = true) //READ
+    @Transactional(readOnly = true) // READ
     public PageResponse<CommentGetResponse> getComments(Long taskId, int page, int size, String sort) {
         taskExternalService.getTaskById(taskId);
+
         Sort order = "oldest".equalsIgnoreCase(sort)
                 ? Sort.by("createdAt").ascending()
                 : Sort.by("createdAt").descending();
@@ -69,25 +71,7 @@ public class CommentInternalService {
         return PageResponse.fromPage(pageResult);
     }
 
-    /*
-    @Transactional // DELETE
-    public void deleteComment(Long userId, Long taskId, Long commentId) {
-        userRepository.findById(userId).orElseThrow(() -> new InvalidCommentException(CommentErrorCode.USER_NOT_FOUND));
-        taskExternalService.getTaskById(taskId);
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new InvalidCommentException(CommentErrorCode.COMMENT_NOT_FOUND));
-
-        if (!comment.getUser().getId().equals(userId)){
-            throw new InvalidCommentException(CommentErrorCode.COMMENT_USER_MISMATCH);
-        }
-        if (!comment.getTask().getId().equals(taskId)) {
-            throw new InvalidCommentException(CommentErrorCode.COMMENT_TASK_MISMATCH);
-        }
-        commentRepository.delete(comment);
-    }
-    */
-
-    @Transactional // DELETE  댓글의 자식 댓글이 있을 시 자식 댓글 전체 삭제
+    @Transactional // DELETE (댓글의 자식 댓글이 있을 시 자식 댓글 전체 삭제)
     public String deleteComment(Long userId, Long taskId, Long commentId) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new InvalidCommentException(CommentErrorCode.USER_NOT_FOUND));
@@ -109,16 +93,18 @@ public class CommentInternalService {
             commentRepository.delete(comment);
             return "댓글과 대댓글들이 삭제되었습니다.";
         }
+
         // 부모 댓글 삭제
         commentRepository.delete(comment);
         return "댓글이 삭제되었습니다.";
     }
 
-    @Transactional // 대댓글
+    @Transactional // 대댓글 생성
     public CommentCreateResponse createReplyComment(CommentCreateRequest request, Long userId, Long taskId, Long parentId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new InvalidCommentException(CommentErrorCode.USER_NOT_FOUND));
         Task task = taskExternalService.getTaskById(taskId);
+
         Comment parent = commentRepository.findById(parentId)
                 .orElseThrow(() -> new InvalidCommentException(CommentErrorCode.COMMENT_NOT_FOUND));
 
