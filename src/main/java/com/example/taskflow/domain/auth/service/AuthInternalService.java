@@ -1,7 +1,9 @@
 package com.example.taskflow.domain.auth.service;
 
+import com.example.taskflow.common.exception.CommonErrorCode;
 import com.example.taskflow.domain.auth.dto.request.AuthLoginRequest;
 import com.example.taskflow.domain.auth.dto.request.AuthRegisterRequest;
+import com.example.taskflow.domain.auth.dto.request.AuthWithdrawRequest;
 import com.example.taskflow.domain.auth.dto.response.AuthLoginResponse;
 import com.example.taskflow.domain.auth.dto.response.AuthResponse;
 import com.example.taskflow.domain.auth.exception.AuthErrorCode;
@@ -12,9 +14,11 @@ import com.example.taskflow.domain.user.entity.User;
 import com.example.taskflow.domain.user.enums.Role;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,6 +26,7 @@ public class AuthInternalService {
 
     private final AuthRepository authRepository;
     private final JwtProvider jwtProvider;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public AuthResponse signup(AuthRegisterRequest request) {
@@ -34,11 +39,11 @@ public class AuthInternalService {
             throw new AuthException(AuthErrorCode.EMAIL_ALREADY_EXISTS);
         }
 
-        // TODO: 비밀번호 인코딩
+        String encodePw = passwordEncoder.encode(request.password());
 
         User user = User.create(
                 request.username(),
-                request.password(),
+                encodePw,
                 request.email(),
                 request.name(),
                 Role.user
@@ -49,12 +54,12 @@ public class AuthInternalService {
         return AuthResponse.from(savedUser);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public AuthLoginResponse login(AuthLoginRequest request) {
-        User user = authRepository.findByUsername(request.username()).orElseThrow(() ->
-                new AuthException(AuthErrorCode.INVALID_LOGIN));
+        User user = authRepository.findByUsernameAndDeletedAtIsNull(request.username()).orElseThrow(() ->
+                new AuthException(AuthErrorCode.USER_WITHDRAWN));
 
-        if (!ObjectUtils.nullSafeEquals(user.getPassword(), request.password())) {
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new AuthException(AuthErrorCode.INVALID_LOGIN);
         }
 
@@ -62,4 +67,18 @@ public class AuthInternalService {
 
         return AuthLoginResponse.of(token);
     }
+
+    @Transactional
+    public void withdraw(AuthWithdrawRequest request, Long userId) {
+
+        User user = authRepository.findById(userId).orElseThrow(
+                () -> new AuthException(CommonErrorCode.INVALID_USER));
+
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
+            throw new AuthException(AuthErrorCode.PASSWORD_MISSMATCH);
+        }
+
+        user.setDeletedAt(LocalDateTime.now());
+    }
+
 }

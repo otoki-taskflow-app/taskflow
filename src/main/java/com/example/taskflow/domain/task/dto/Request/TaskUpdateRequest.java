@@ -25,6 +25,7 @@ public record TaskUpdateRequest(
         @NotBlank
         Status status,
 
+        @NotBlank
         Long assigneeId
 ) {
 

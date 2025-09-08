@@ -2,6 +2,7 @@ package com.example.taskflow.domain.task.controller;
 
 import com.example.taskflow.common.response.ApiResponse;
 import com.example.taskflow.common.response.PageResponse;
+import com.example.taskflow.domain.auth.security.annotation.CurrentUser;
 import com.example.taskflow.domain.task.dto.Request.TaskCreateRequest;
 import com.example.taskflow.domain.task.dto.Request.TaskStatusUpdateRequest;
 import com.example.taskflow.domain.task.dto.Request.TaskUpdateRequest;
@@ -29,10 +30,11 @@ public class TaskController {
     // task 생성
     @PostMapping
     public ResponseEntity<ApiResponse<TaskCreateResponse>> createTask(
-            @RequestBody @Valid TaskCreateRequest taskCreateRequest
+            @RequestBody @Valid TaskCreateRequest taskCreateRequest,
+            @CurrentUser Long userId
     ) {
 
-        TaskCreateResponse response = taskInternalService.createTask(taskCreateRequest);
+        TaskCreateResponse response = taskInternalService.createTask(taskCreateRequest, userId);
 
         return ApiResponse.created(response, "Task가 생성되었습니다.");
     }
