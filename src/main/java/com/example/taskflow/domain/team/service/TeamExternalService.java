@@ -30,9 +30,10 @@ public class TeamExternalService {
     }
 
     public List<TeamSummary> searchByKeyword(String keyword) {
-        List<Team> teams = teamRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword);
-        return teams.stream()
-                .map(team -> new TeamSummary(team.getId(), team.getName(), team.getDescription()))
+        return teamRepository
+                .findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword)
+                .stream()
+                .map(TeamSummary::from)
                 .toList();
     }
 }
