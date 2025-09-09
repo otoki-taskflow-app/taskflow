@@ -1,6 +1,7 @@
 package com.example.taskflow.domain.task.repository;
 
 import com.example.taskflow.domain.task.entity.Task;
+import com.example.taskflow.domain.task.enums.Status;
 import com.example.taskflow.domain.task.exception.InvalidTaskException;
 import com.example.taskflow.domain.task.exception.TaskErrorCode;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,9 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @EntityGraph(attributePaths = "assignee")
     Page<Task> findAllByDeletedAtIsNull(Pageable pageable);
+
+    @EntityGraph(attributePaths = "assignee")
+    Page<Task> findAllByDeletedAtIsNullAndStatus(Status status, Pageable pageable);
 
     Optional<Task> findByIdAndDeletedAtIsNull(Long id);
 

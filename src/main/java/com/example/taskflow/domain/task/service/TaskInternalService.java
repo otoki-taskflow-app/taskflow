@@ -66,9 +66,15 @@ public class TaskInternalService {
      * @return 조회된 태스크 목록을 TaskGetResponse DTO의 Page로 반환
      */
     @Transactional (readOnly=true)
-    public Page<TaskGetResponse> getAllTasks(Pageable pageable) {
+    public Page<TaskGetResponse> getAllTasks(Pageable pageable, Status status) {
 
-        Page<Task> tasks = taskRepository.findAllByDeletedAtIsNull(pageable);
+        Page<Task> tasks;
+
+        if (status == null) {
+            tasks = taskRepository.findAllByDeletedAtIsNull(pageable);
+        } else {
+            tasks = taskRepository.findAllByDeletedAtIsNullAndStatus(status ,pageable);
+        }
 
         return tasks.map(TaskGetResponse::from);
     }
