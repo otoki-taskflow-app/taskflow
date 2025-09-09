@@ -10,6 +10,7 @@ import com.example.taskflow.domain.task.dto.Response.TaskCreateResponse;
 import com.example.taskflow.domain.task.dto.Response.TaskGetResponse;
 import com.example.taskflow.domain.task.dto.Response.TaskStatusUpdateResponse;
 import com.example.taskflow.domain.task.dto.Response.TaskUpdateResponse;
+import com.example.taskflow.domain.task.enums.Status;
 import com.example.taskflow.domain.task.service.TaskInternalService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -42,10 +43,10 @@ public class TaskController {
     // task 목록 조회
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<TaskGetResponse>>> getAllTasks(
-            @PageableDefault Pageable pageable
+            @PageableDefault Pageable pageable,
+            @RequestParam(required = false) Status status
     ) {
-
-        Page<TaskGetResponse> response = taskInternalService.getAllTasks(pageable);
+        Page<TaskGetResponse> response = taskInternalService.getAllTasks(pageable, status);
 
         return ApiResponse.pageSuccess(response, "Task 목록을 조회했습니다.");
     }
